@@ -6,7 +6,8 @@
         "php": "^7.1"
     },
     "require-dev": {
-        "leviy/coding-standard": "^3.4"
+        "leviy/coding-standard": "^3.4",
+        "phpstan/phpstan": "^0.9.2"
     },
     "config": {
         "sort-packages": true
