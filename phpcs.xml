@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset>
+    <rule ref="LEVIY"/>
+
+    <config name="ignore_warnings_on_exit" value="1"/>
+
+    <file>src/</file>
+    <file>tests/</file>
+</ruleset>

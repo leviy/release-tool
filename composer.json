@@ -1,0 +1,24 @@
+{
+    "name": "leviy/release-tool",
+    "type": "library",
+    "description": "Command line tool for releasing new versions of a project",
+    "require": {
+        "php": "^7.1"
+    },
+    "require-dev": {
+        "leviy/coding-standard": "^3.4"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Leviy\\ReleaseTool\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Leviy\\ReleaseTool\\Tests\\Unit\\": "tests/unit"
+        }
+    }
+}
