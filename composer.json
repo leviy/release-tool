@@ -3,11 +3,16 @@
     "type": "library",
     "description": "Command line tool for releasing new versions of a project",
     "require": {
-        "php": "^7.1"
+        "php": "^7.1",
+        "beberlei/assert": "^2.9"
     },
     "require-dev": {
+        "jakub-onderka/php-console-highlighter": "^0.3.2",
+        "jakub-onderka/php-parallel-lint": "^1.0",
         "leviy/coding-standard": "^3.4",
-        "phpstan/phpstan": "^0.9.2"
+        "mockery/mockery": "^1.1",
+        "phpstan/phpstan": "^0.9.2",
+        "phpunit/phpunit": "^7.1"
     },
     "config": {
         "sort-packages": true
