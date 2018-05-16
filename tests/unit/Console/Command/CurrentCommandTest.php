@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Tests\Unit\Console\Command;
 
 use Leviy\ReleaseTool\Console\Command\CurrentCommand;
+use Leviy\ReleaseTool\Vcs\ReleaseNotFoundException;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Mockery;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Tester\CommandTester;
-use function array_merge;
+use Symfony\Component\Console\Tester\ApplicationTester;
 
 class CurrentCommandTest extends TestCase
 {
@@ -19,38 +19,43 @@ class CurrentCommandTest extends TestCase
     private $vcs;
 
     /**
-     * @var Application
+     * @var ApplicationTester
      */
-    private $application;
+    private $console;
 
     protected function setUp(): void
     {
-        $this->application = new Application();
         $this->vcs = Mockery::mock(VersionControlSystem::class);
+
+        $application = new Application();
+        $application->add(new CurrentCommand($this->vcs));
+        $application->setAutoExit(false);
+
+        $this->console = new ApplicationTester($application);
     }
 
     public function testThatItOutputsTheVersionNumber(): void
     {
-        $this->application->add(new CurrentCommand($this->vcs));
-
         $this->vcs->shouldReceive('getLastVersion')->andReturn('3.2.0');
 
-        $output = $this->runCommand('current');
+        $this->runCommand('current');
 
-        $this->assertContains('Current version: 3.2.0', $output);
+        $this->assertContains('Current version: 3.2.0', $this->console->getDisplay());
+        $this->assertSame(0, $this->console->getStatusCode());
     }
 
-    /**
-     * @param string   $command
-     * @param string[] $arguments
-     *
-     * @return string
-     */
-    private function runCommand(string $command, array $arguments = []): string
+    public function testThatItShowsAnErrorMessageIfNoVersionIsFound(): void
     {
-        $commandTester = new CommandTester($this->application->find($command));
-        $commandTester->execute(array_merge(['command' => $command], $arguments));
+        $this->vcs->shouldReceive('getLastVersion')->andThrow(ReleaseNotFoundException::class);
 
-        return $commandTester->getDisplay();
+        $this->runCommand('current');
+
+        $this->assertContains('No existing version found', $this->console->getDisplay());
+        $this->assertSame(1, $this->console->getStatusCode());
+    }
+
+    private function runCommand(string $command): void
+    {
+        $this->console->run(['command' => $command]);
     }
 }

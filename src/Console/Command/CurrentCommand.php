@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Console\Command;
 
+use Leviy\ReleaseTool\Vcs\ReleaseNotFoundException;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,10 +31,18 @@ final class CurrentCommand extends Command
             ->setDescription('Display the current version number');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $currentVersion = $this->versionControlSystem->getLastVersion();
+        try {
+            $currentVersion = $this->versionControlSystem->getLastVersion();
+        } catch (ReleaseNotFoundException $exception) {
+            $output->writeln('<error>No existing version found</error>');
+
+            return 1;
+        }
 
         $output->writeln(sprintf('Current version: <info>%s</info>', $currentVersion));
+
+        return 0;
     }
 }
