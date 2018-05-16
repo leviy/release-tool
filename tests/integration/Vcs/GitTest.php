@@ -38,6 +38,15 @@ class GitTest extends TestCase
         $this->assertSame('1.0.0', $git->getLastVersion());
     }
 
+    public function testThatNoCommitHashAndNumberOfAdditionalCommitsAreReturned(): void
+    {
+        $this->createTag('1.0.0', 'HEAD~2');
+
+        $git = $this->getTestGitInstance();
+
+        $this->assertSame('1.0.0', $git->getLastVersion());
+    }
+
     public function testThatAnExceptionIsThrownIfNoMatchingTagIsFound(): void
     {
         $this->expectException(ReleaseNotFoundException::class);
@@ -63,9 +72,15 @@ class GitTest extends TestCase
         return new Git(self::TEST_TAG_PREFIX . $prefix);
     }
 
-    private function createTag(string $tag): void
+    private function createTag(string $tag, ?string $head = null): void
     {
         $tag = self::TEST_TAG_PREFIX . $tag;
+
+        if ($head !== null) {
+            exec('git tag ' . $tag . ' ' . $head);
+
+            return;
+        }
 
         exec('git tag ' . $tag);
     }

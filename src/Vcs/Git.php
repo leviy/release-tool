@@ -31,6 +31,7 @@ final class Git implements VersionControlSystem
                 'describe',
                 [
                     '--tags',
+                    '--abbrev=0',
                     sprintf('--match "%s%s"', $this->tagPrefix, self::VERSION_GLOB),
                 ]
             )[0];
