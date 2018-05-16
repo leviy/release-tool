@@ -3,7 +3,8 @@
     "type": "library",
     "description": "Command line tool for releasing new versions of a project",
     "require": {
-        "php": "^7.1"
+        "php": "^7.1",
+        "symfony/console": "^4.0"
     },
     "require-dev": {
         "jakub-onderka/php-console-highlighter": "^0.3.2",
@@ -22,7 +23,11 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Leviy\\ReleaseTool\\Tests\\Unit\\": "tests/unit"
+            "Leviy\\ReleaseTool\\Tests\\Unit\\": "tests/unit",
+            "Leviy\\ReleaseTool\\Tests\\Integration\\": "tests/integration"
         }
-    }
+    },
+    "bin": [
+        "bin/release"
+    ]
 }
