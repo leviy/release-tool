@@ -7,8 +7,11 @@ use Leviy\ReleaseTool\Console\Command\CurrentCommand;
 use Leviy\ReleaseTool\Vcs\ReleaseNotFoundException;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Mockery;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 
-class CurrentCommandTest extends CommandTest
+class CurrentCommandTest extends TestCase
 {
     /**
      * @var Mockery\MockInterface|VersionControlSystem
@@ -18,27 +21,39 @@ class CurrentCommandTest extends CommandTest
     protected function setUp(): void
     {
         $this->vcs = Mockery::mock(VersionControlSystem::class);
-
-        parent::setUpApplicationTester(new CurrentCommand($this->vcs));
     }
 
     public function testThatItOutputsTheVersionNumber(): void
     {
+        $command = new CurrentCommand($this->vcs);
+
+        $application = new Application();
+        $application->add($command);
+
+        $commandTester = new CommandTester($command);
+
         $this->vcs->shouldReceive('getLastVersion')->andReturn('3.2.0');
 
-        $this->runCommand('current');
+        $commandTester->execute([]);
 
-        $this->assertContains('Current version: 3.2.0', $this->console->getDisplay());
-        $this->assertSame(0, $this->console->getStatusCode());
+        $this->assertContains('Current version: 3.2.0', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     public function testThatItShowsAnErrorMessageIfNoVersionIsFound(): void
     {
+        $command = new CurrentCommand($this->vcs);
+
+        $application = new Application();
+        $application->add($command);
+
+        $commandTester = new CommandTester($command);
+
         $this->vcs->shouldReceive('getLastVersion')->andThrow(ReleaseNotFoundException::class);
 
-        $this->runCommand('current');
+        $commandTester->execute([]);
 
-        $this->assertContains('No existing version found', $this->console->getDisplay());
-        $this->assertSame(1, $this->console->getStatusCode());
+        $this->assertContains('No existing version found', $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 }

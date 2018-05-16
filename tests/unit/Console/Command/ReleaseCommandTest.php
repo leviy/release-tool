@@ -7,8 +7,11 @@ use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 
-class ReleaseCommandTest extends CommandTest
+class ReleaseCommandTest extends TestCase
 {
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
@@ -20,14 +23,20 @@ class ReleaseCommandTest extends CommandTest
     protected function setUp(): void
     {
         $this->vcs = Mockery::spy(VersionControlSystem::class);
-
-        parent::setUpApplicationTester(new ReleaseCommand($this->vcs));
     }
 
     public function testThatItCreatesANewRelease(): void
     {
-        $this->runCommand('release', ['version' => '1.2.0']);
+        $command = new ReleaseCommand($this->vcs);
 
-        $this->vcs->shouldHaveReceived('createVersion');
+        $application = new Application();
+        $application->add($command);
+
+        $commandTester = new CommandTester($command);
+
+        $commandTester->setInputs(['yes']);
+        $commandTester->execute(['version' => '1.2.0']);
+
+        $this->vcs->shouldHaveReceived('createVersion', ['1.2.0']);
     }
 }

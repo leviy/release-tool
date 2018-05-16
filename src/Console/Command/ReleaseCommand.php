@@ -8,6 +8,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\StyleInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class ReleaseCommand extends Command
 {
@@ -33,10 +35,19 @@ final class ReleaseCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): void
     {
-        $output->writeln('<info>Releasing the new version...</info>');
+        /** @var StyleInterface $style */
+        $style = new SymfonyStyle($input, $output);
 
-        $this->versionControlSystem->createVersion($input->getArgument('version'));
+        $version = $input->getArgument('version');
 
-        $output->writeln('<info>Done.</info>');
+        if (!$style->confirm('This will release version ' . $version . '. Do you want to continue?')) {
+            return;
+        }
+
+        $style->text('Releasing the new version...');
+
+        $this->versionControlSystem->createVersion($version);
+
+        $style->success('Version ' . $version . ' has been released.');
     }
 }
