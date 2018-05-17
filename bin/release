@@ -2,16 +2,34 @@
 <?php
 declare(strict_types=1);
 
-use Leviy\ReleaseTool\Console\Command\CurrentCommand;
-use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
-use Leviy\ReleaseTool\Vcs\Git;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$vcs = new Git('v');
+$container = new ContainerBuilder();
+
+$loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../config'));
+$loader->load('services.yaml');
+$loader->load('commands.yaml');
+
+$container->addCompilerPass(new AddConsoleCommandPass);
+$container->compile();
 
 $application = new Application('Leviy Release Tool');
-$application->add(new CurrentCommand($vcs));
-$application->add(new ReleaseCommand($vcs));
+
+/** @var string[] $commandIds */
+$commandIds = $container->getParameter('console.command.ids');
+
+foreach ($commandIds as $commandId) {
+    /** @var Command $command */
+    $command = $container->get($commandId);
+
+    $application->add($command);
+}
+
 $application->run();
