@@ -6,7 +6,9 @@ namespace Leviy\ReleaseTool\Tests\Integration\Vcs;
 use Leviy\ReleaseTool\Vcs\Git;
 use Leviy\ReleaseTool\Vcs\ReleaseNotFoundException;
 use PHPUnit\Framework\TestCase;
+use function array_map;
 use function exec;
+use function str_replace;
 
 class GitTest extends TestCase
 {
@@ -67,9 +69,33 @@ class GitTest extends TestCase
         $git->getLastVersion();
     }
 
+    public function testThatANewVersionIsTagged(): void
+    {
+        $git = $this->getTestGitInstance('v');
+
+        $git->createVersion('1.2.0');
+
+        $this->assertContains('v1.2.0', $this->getTags());
+    }
+
     private function getTestGitInstance(string $prefix = ''): Git
     {
         return new Git(self::TEST_TAG_PREFIX . $prefix);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getTags(): array
+    {
+        exec('git tag', $output);
+
+        return array_map(
+            function (string $tag): string {
+                return str_replace(self::TEST_TAG_PREFIX, '', $tag);
+            },
+            $output
+        );
     }
 
     private function createTag(string $tag, ?string $head = null): void

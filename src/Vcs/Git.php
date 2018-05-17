@@ -46,6 +46,11 @@ final class Git implements VersionControlSystem
         return $this->getVersionFromTag($tag);
     }
 
+    public function createVersion(string $version): void
+    {
+        $this->executeGitCommand('tag', [$this->tagPrefix . $version]);
+    }
+
     /**
      * @param string   $command
      * @param string[] $arguments

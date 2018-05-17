@@ -3,11 +3,15 @@
 declare(strict_types=1);
 
 use Leviy\ReleaseTool\Console\Command\CurrentCommand;
+use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
 use Leviy\ReleaseTool\Vcs\Git;
 use Symfony\Component\Console\Application;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+$vcs = new Git('v');
+
 $application = new Application('Leviy Release Tool');
-$application->add(new CurrentCommand(new Git('v')));
+$application->add(new CurrentCommand($vcs));
+$application->add(new ReleaseCommand($vcs));
 $application->run();
