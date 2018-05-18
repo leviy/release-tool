@@ -1,0 +1,8 @@
+services:
+  _defaults:
+      public: false
+
+  vcs.git:
+    class: Leviy\ReleaseTool\Vcs\Git
+    arguments:
+      - 'v'

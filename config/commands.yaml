@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    tags:
+      - { name: 'console.command' }
+
+  command.current:
+    class: Leviy\ReleaseTool\Console\Command\CurrentCommand
+    arguments:
+      - '@vcs.git'
+
+  command.release:
+    class: Leviy\ReleaseTool\Console\Command\ReleaseCommand
+    arguments:
+      - '@vcs.git'
