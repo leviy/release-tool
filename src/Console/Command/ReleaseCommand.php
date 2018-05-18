@@ -39,7 +39,7 @@ final class ReleaseCommand extends Command
         $this
             ->setName('release')
             ->setDescription('Release a new version')
-            ->addArgument('version', InputArgument::REQUIRED, 'The version number for the new release');
+            ->addArgument('version', InputArgument::OPTIONAL, 'The version number for the new release');
     }
 
     protected function interact(InputInterface $input, OutputInterface $output): void
