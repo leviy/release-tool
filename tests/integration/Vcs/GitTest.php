@@ -103,12 +103,12 @@ class GitTest extends TestCase
         $tag = self::TEST_TAG_PREFIX . $tag;
 
         if ($head !== null) {
-            exec('git tag ' . $tag . ' ' . $head);
+            exec('git tag --annotate --message="Test tag" ' . $tag . ' ' . $head);
 
             return;
         }
 
-        exec('git tag ' . $tag);
+        exec('git tag --annotate --message="Test tag" ' . $tag);
     }
 
     private function deleteTestTags(): void
