@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Console\Command;
 
+use Leviy\ReleaseTool\Console\InteractiveInformationCollector;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
+use Leviy\ReleaseTool\Versioning\Strategy;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,9 +20,15 @@ final class ReleaseCommand extends Command
      */
     private $versionControlSystem;
 
-    public function __construct(VersionControlSystem $versionControlSystem)
+    /**
+     * @var Strategy
+     */
+    private $versioningStrategy;
+
+    public function __construct(VersionControlSystem $versionControlSystem, Strategy $versioningStrategy)
     {
         $this->versionControlSystem = $versionControlSystem;
+        $this->versioningStrategy = $versioningStrategy;
 
         parent::__construct();
     }
@@ -31,6 +39,18 @@ final class ReleaseCommand extends Command
             ->setName('release')
             ->setDescription('Release a new version')
             ->addArgument('version', InputArgument::REQUIRED, 'The version number for the new release');
+    }
+
+    protected function interact(InputInterface $input, OutputInterface $output): void
+    {
+        if ($input->getArgument('version') === null) {
+            $style = new SymfonyStyle($input, $output);
+            $informationCollector = new InteractiveInformationCollector($style);
+
+            $current = $this->versionControlSystem->getLastVersion();
+
+            $input->setArgument('version', $this->versioningStrategy->getNextVersion($current, $informationCollector));
+        }
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): void

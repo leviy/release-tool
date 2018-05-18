@@ -6,3 +6,6 @@ services:
     class: Leviy\ReleaseTool\Vcs\Git
     arguments:
       - 'v'
+
+  versioning_strategy.semantic:
+    class: Leviy\ReleaseTool\Versioning\SemanticVersioning
