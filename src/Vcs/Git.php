@@ -30,7 +30,6 @@ final class Git implements VersionControlSystem
             $tag = $this->executeGitCommand(
                 'describe',
                 [
-                    '--tags',
                     '--abbrev=0',
                     sprintf('--match "%s%s"', $this->tagPrefix, self::VERSION_GLOB),
                 ]
@@ -48,7 +47,14 @@ final class Git implements VersionControlSystem
 
     public function createVersion(string $version): void
     {
-        $this->executeGitCommand('tag', [$this->tagPrefix . $version]);
+        $this->executeGitCommand(
+            'tag',
+            [
+                '--annotate',
+                $this->tagPrefix . $version,
+                sprintf('--message="Release %s"', $version),
+            ]
+        );
     }
 
     /**
