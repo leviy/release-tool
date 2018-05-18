@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function sprintf;
 
 final class ReleaseCommand extends Command
 {
@@ -45,9 +46,11 @@ final class ReleaseCommand extends Command
     {
         if ($input->getArgument('version') === null) {
             $style = new SymfonyStyle($input, $output);
+            $current = $this->versionControlSystem->getLastVersion();
+
             $informationCollector = new InteractiveInformationCollector($style);
 
-            $current = $this->versionControlSystem->getLastVersion();
+            $style->text('The previous version on this branch is <info>' . $current . '</info>.');
 
             $input->setArgument('version', $this->versioningStrategy->getNextVersion($current, $informationCollector));
         }
@@ -60,11 +63,11 @@ final class ReleaseCommand extends Command
 
         $version = $input->getArgument('version');
 
-        if (!$style->confirm('This will release version ' . $version . '. Do you want to continue?')) {
+        $style->text(sprintf('This will release version <info>%s</info>.', $version));
+
+        if (!$style->confirm('Do you want to continue?')) {
             return;
         }
-
-        $style->text('Releasing the new version...');
 
         $this->versionControlSystem->createVersion($version);
 
