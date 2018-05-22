@@ -13,6 +13,7 @@ use const PHP_EOL;
 final class Git implements VersionControlSystem
 {
     private const VERSION_GLOB = '[0-9]*';
+    private const REMOTE = 'origin';
 
     /**
      * @var string
@@ -55,6 +56,14 @@ final class Git implements VersionControlSystem
                 sprintf('--message="Release %s"', $version),
             ]
         );
+    }
+
+    public function pushVersion(string $version): void
+    {
+        $this->executeGitCommand('push', [
+            self::REMOTE,
+            'refs/tags/' . $this->tagPrefix . $version,
+        ]);
     }
 
     /**

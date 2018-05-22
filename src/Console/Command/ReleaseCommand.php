@@ -69,8 +69,28 @@ final class ReleaseCommand extends Command
             return;
         }
 
-        $this->versionControlSystem->createVersion($version);
+        $this->createVersion($style, $version);
+
+        $this->pushVersion($style, $version);
 
         $style->success('Version ' . $version . ' has been released.');
+    }
+
+    private function createVersion(StyleInterface $style, string $version): void
+    {
+        $style->text('Tagging current branch with new version...');
+
+        $this->versionControlSystem->createVersion($version);
+    }
+
+    private function pushVersion(StyleInterface $style, string $version): void
+    {
+        if (!$style->confirm('Do you want to push version ' . $version . ' to remote?')) {
+            return;
+        }
+
+        $style->text('Pushing the new version to VCS...');
+
+        $this->versionControlSystem->pushVersion($version);
     }
 }
