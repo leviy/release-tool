@@ -8,4 +8,6 @@ interface VersionControlSystem
     public function getLastVersion(): string;
 
     public function createVersion(string $version): void;
+
+    public function pushVersion(string $version): void;
 }

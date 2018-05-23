@@ -32,7 +32,7 @@ class ReleaseCommandTest extends TestCase
         $this->versioningStrategy = Mockery::mock(Strategy::class);
     }
 
-    public function testThatItCreatesANewRelease(): void
+    public function testThatItCreatesANewReleaseAndPushToRemote(): void
     {
         $command = new ReleaseCommand($this->vcs, $this->versioningStrategy);
 
@@ -41,10 +41,27 @@ class ReleaseCommandTest extends TestCase
 
         $commandTester = new CommandTester($command);
 
-        $commandTester->setInputs(['yes']);
+        $commandTester->setInputs(['yes', 'yes']);
         $commandTester->execute(['version' => '1.2.0']);
 
         $this->vcs->shouldHaveReceived('createVersion', ['1.2.0']);
+        $this->vcs->shouldHaveReceived('pushVersion', ['1.2.0']);
+    }
+
+    public function testThatItCreatesANewReleaseAndNotPushToRemote(): void
+    {
+        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy);
+
+        $application = new Application();
+        $application->add($command);
+
+        $commandTester = new CommandTester($command);
+
+        $commandTester->setInputs(['yes', 'no']);
+        $commandTester->execute(['version' => '1.2.0']);
+
+        $this->vcs->shouldHaveReceived('createVersion', ['1.2.0']);
+        $this->vcs->shouldNotHaveReceived('pushVersion', ['1.2.0']);
     }
 
     public function testThatItUsesAVersioningStrategyToDetermineTheNextVersion(): void
@@ -57,7 +74,7 @@ class ReleaseCommandTest extends TestCase
         $this->versioningStrategy->shouldReceive('getNextVersion')->andReturn('2.3.0');
 
         $commandTester = new CommandTester($command);
-        $commandTester->setInputs(['yes']);
+        $commandTester->setInputs(['yes', 'no']);
 
         $commandTester->execute([]);
 
