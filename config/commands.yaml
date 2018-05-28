@@ -13,3 +13,4 @@ services:
     arguments:
       - '@vcs.git'
       - '@versioning_strategy.semantic'
+      - '@host.github'
