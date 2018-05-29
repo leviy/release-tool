@@ -13,6 +13,7 @@ use const PHP_EOL;
 final class Git implements VersionControlSystem
 {
     private const VERSION_GLOB = '[0-9]*';
+
     private const REMOTE = 'origin';
 
     /**
@@ -25,10 +26,31 @@ final class Git implements VersionControlSystem
         $this->tagPrefix = $tagPrefix;
     }
 
+    /**
+     * @param string   $command
+     * @param string[] $arguments
+     *
+     * @return string[]
+     *
+     * @internal
+     */
+    public static function execute(string $command, array $arguments = []): array
+    {
+        $command = sprintf('git %s %s', $command, implode(' ', $arguments));
+
+        exec($command . ' 2>&1', $output, $exitCode);
+
+        if ($exitCode > 0) {
+            throw new GitException(implode(PHP_EOL, $output));
+        }
+
+        return $output;
+    }
+
     public function getLastVersion(): string
     {
         try {
-            $tag = $this->executeGitCommand(
+            $tag = self::execute(
                 'describe',
                 [
                     '--abbrev=0',
@@ -36,11 +58,7 @@ final class Git implements VersionControlSystem
                 ]
             )[0];
         } catch (GitException $exception) {
-            if ($exception->getMessage() === 'fatal: No names found, cannot describe anything.') {
-                throw new ReleaseNotFoundException('No release could be found', 0, $exception);
-            }
-
-            throw $exception;
+            throw new ReleaseNotFoundException('No release could be found', 0, $exception);
         }
 
         return $this->getVersionFromTag($tag);
@@ -48,7 +66,7 @@ final class Git implements VersionControlSystem
 
     public function createVersion(string $version): void
     {
-        $this->executeGitCommand(
+        self::execute(
             'tag',
             [
                 '--annotate',
@@ -60,29 +78,13 @@ final class Git implements VersionControlSystem
 
     public function pushVersion(string $version): void
     {
-        $this->executeGitCommand('push', [
-            self::REMOTE,
-            'refs/tags/' . $this->tagPrefix . $version,
-        ]);
-    }
-
-    /**
-     * @param string   $command
-     * @param string[] $arguments
-     *
-     * @return string[]
-     */
-    private function executeGitCommand(string $command, array $arguments = []): array
-    {
-        $command = sprintf('git %s %s', $command, implode(' ', $arguments));
-
-        exec($command . ' 2>&1', $output, $exitCode);
-
-        if ($exitCode > 0) {
-            throw new GitException(implode(PHP_EOL, $output));
-        }
-
-        return $output;
+        self::execute(
+            'push',
+            [
+                self::REMOTE,
+                'refs/tags/' . $this->tagPrefix . $version,
+            ]
+        );
     }
 
     private function getVersionFromTag(string $tag): string
