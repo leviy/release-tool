@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Console\Command;
 
+use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Console\InteractiveInformationCollector;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Leviy\ReleaseTool\Versioning\Strategy;
@@ -26,10 +27,19 @@ final class ReleaseCommand extends Command
      */
     private $versioningStrategy;
 
-    public function __construct(VersionControlSystem $versionControlSystem, Strategy $versioningStrategy)
-    {
+    /**
+     * @var ChangelogGenerator
+     */
+    private $changelogGenerator;
+
+    public function __construct(
+        VersionControlSystem $versionControlSystem,
+        Strategy $versioningStrategy,
+        ChangelogGenerator $changeLogGenerator
+    ) {
         $this->versionControlSystem = $versionControlSystem;
         $this->versioningStrategy = $versioningStrategy;
+        $this->changelogGenerator = $changeLogGenerator;
 
         parent::__construct();
     }
@@ -51,6 +61,10 @@ final class ReleaseCommand extends Command
             $informationCollector = new InteractiveInformationCollector($style);
 
             $style->text('The previous version on this branch is <info>' . $current . '</info>.');
+            $style->newLine();
+
+            $style->text('A new release will introduce the following changes:');
+            $style->listing($this->changelogGenerator->getChanges());
 
             $input->setArgument('version', $this->versioningStrategy->getNextVersion($current, $informationCollector));
         }

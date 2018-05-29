@@ -9,3 +9,8 @@ services:
 
   versioning_strategy.semantic:
     class: Leviy\ReleaseTool\Versioning\SemanticVersioning
+
+  changelog_generator.pull_request:
+    class: Leviy\ReleaseTool\Changelog\PullRequestChangelogGenerator
+    arguments:
+      - '@vcs.git'

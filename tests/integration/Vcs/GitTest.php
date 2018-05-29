@@ -13,8 +13,7 @@ class GitTest extends TestCase
     protected function setUp(): void
     {
         Git::execute('init');
-        Git::execute('add README.md');
-        Git::execute('commit -m "First commit"');
+        $this->commitFile('README.md');
     }
 
     protected function tearDown(): void
@@ -42,8 +41,7 @@ class GitTest extends TestCase
 
     public function testThatNoCommitHashAndNumberOfAdditionalCommitsAreReturned(): void
     {
-        Git::execute('add phpunit.xml');
-        Git::execute('commit -m "Another commit"');
+        $this->commitFile('phpunit.xml');
 
         $this->createTag('1.0.0', 'HEAD^');
 
@@ -79,6 +77,37 @@ class GitTest extends TestCase
         $git->createVersion('1.2.0');
 
         $this->assertContains('v1.2.0', $this->getTags());
+    }
+
+    public function testThatCommitsSinceAVersionAreReturned(): void
+    {
+        $this->createTag('1.0.0', 'HEAD');
+        $this->commitFile('phpunit.xml', 'New commit message');
+
+        $git = new Git();
+        $commits = $git->getCommitsSinceLastVersion();
+
+        $this->assertCount(1, $commits);
+        $this->assertSame('New commit message', $commits[0]->title);
+    }
+
+    public function testThatCommitsAreFilteredByPattern(): void
+    {
+        $this->createTag('1.0.0', 'HEAD');
+        $this->commitFile('phpunit.xml', 'New commit message');
+        $this->commitFile('composer.json', 'Other commit message');
+
+        $git = new Git();
+        $commits = $git->getCommitsSinceLastVersion('Other');
+
+        $this->assertCount(1, $commits);
+        $this->assertSame('Other commit message', $commits[0]->title);
+    }
+
+    private function commitFile(string $filename, string $commitMessage = 'Commit message'): void
+    {
+        Git::execute('add ' . $filename);
+        Git::execute('commit -m "' . $commitMessage . '"');
     }
 
     /**
