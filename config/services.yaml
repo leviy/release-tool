@@ -2,10 +2,27 @@ services:
   _defaults:
       public: false
 
+  guzzle.client:
+    class: GuzzleHttp\Client
+
+  configuration:
+    class: Leviy\ReleaseTool\Configuration\GlobalConfiguration
+
   vcs.git:
     class: Leviy\ReleaseTool\Vcs\Git
     arguments:
       - 'v'
+
+  client.github:
+    class: Leviy\ReleaseTool\Host\GitHub\GitHubClient
+    arguments:
+      - '@guzzle.client'
+
+  host.github:
+    class: Leviy\ReleaseTool\Host\GitHub\GitHub
+    arguments:
+      - '@client.github'
+      - '@configuration'
 
   versioning_strategy.semantic:
     class: Leviy\ReleaseTool\Versioning\SemanticVersioning

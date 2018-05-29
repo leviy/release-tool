@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Console\Command;
 
 use Leviy\ReleaseTool\Console\InteractiveInformationCollector;
+use Leviy\ReleaseTool\Host\Host;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Leviy\ReleaseTool\Versioning\Strategy;
 use Symfony\Component\Console\Command\Command;
@@ -26,10 +27,16 @@ final class ReleaseCommand extends Command
      */
     private $versioningStrategy;
 
-    public function __construct(VersionControlSystem $versionControlSystem, Strategy $versioningStrategy)
+    /**
+     * @var Host
+     */
+    private $hostStrategy;
+
+    public function __construct(VersionControlSystem $versionControlSystem, Strategy $versioningStrategy, Host $hostStrategy)
     {
         $this->versionControlSystem = $versionControlSystem;
         $this->versioningStrategy = $versioningStrategy;
+        $this->hostStrategy = $hostStrategy;
 
         parent::__construct();
     }
@@ -73,6 +80,8 @@ final class ReleaseCommand extends Command
 
         $this->pushVersion($style, $version);
 
+        $this->createRelease($style, $version);
+
         $style->success('Version ' . $version . ' has been released.');
     }
 
@@ -92,5 +101,19 @@ final class ReleaseCommand extends Command
         $style->text('Pushing the new version to VCS...');
 
         $this->versionControlSystem->pushVersion($version);
+    }
+
+    private function createRelease(StyleInterface $style, string $version): void
+    {
+        if (!$style->confirm('Do you want to create a release for version: ' . $version . '?')) {
+            return;
+        }
+
+        $this->hostStrategy->setStyle($style);
+        $result = $this->hostStrategy->createRelease($version);
+
+        if ($result === false) {
+            $style->error('The release for version ' . $version . ' could not be created.');
+        }
     }
 }
