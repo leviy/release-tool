@@ -3,11 +3,15 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Vcs;
 
+use function array_filter;
+use function array_map;
 use function exec;
+use function explode;
 use function implode;
 use function sprintf;
 use function strlen;
 use function substr;
+use function trim;
 use const PHP_EOL;
 
 final class Git implements VersionControlSystem
@@ -87,8 +91,48 @@ final class Git implements VersionControlSystem
         );
     }
 
+    /**
+     * @param null|string $pattern
+     *
+     * @return Commit[]
+     */
+    public function getCommitsSinceLastVersion(?string $pattern = null): array
+    {
+        $arguments = [
+            $this->getTagForVersion($this->getLastVersion()) . '..HEAD',
+            '--format="%s%x1F%b%x1E"',
+        ];
+
+        if ($pattern !== null) {
+            $arguments[] = '--grep="' . $pattern . '"';
+            $arguments[] = '--extended-regexp';
+        }
+
+        $output = self::execute('log', $arguments);
+        $output = implode("\n", $output);
+        $commits = explode("\x1E", $output);
+
+        $commits = array_filter($commits);
+
+        $commits = array_map(
+            function (string $commit): Commit {
+                [$title, $body] = explode("\x1F", trim($commit));
+
+                return new Commit($title, $body);
+            },
+            $commits
+        );
+
+        return $commits;
+    }
+
     private function getVersionFromTag(string $tag): string
     {
         return substr($tag, strlen($this->tagPrefix));
+    }
+
+    private function getTagForVersion(string $version): string
+    {
+        return $this->tagPrefix . $version;
     }
 }

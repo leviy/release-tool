@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Tests\Unit\Console\Command;
 
+use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Leviy\ReleaseTool\Versioning\Strategy;
@@ -26,15 +27,22 @@ class ReleaseCommandTest extends TestCase
      */
     private $versioningStrategy;
 
+    /**
+     * @var MockInterface|ChangelogGenerator
+     */
+    private $changelogGenerator;
+
     protected function setUp(): void
     {
         $this->vcs = Mockery::spy(VersionControlSystem::class);
         $this->versioningStrategy = Mockery::mock(Strategy::class);
+        $this->changelogGenerator = Mockery::mock(ChangelogGenerator::class);
     }
 
     public function testThatItCreatesANewReleaseAndPushToRemote(): void
     {
-        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy);
+        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy, $this->changelogGenerator);
+        $this->changelogGenerator->shouldReceive('getChanges');
 
         $application = new Application();
         $application->add($command);
@@ -50,7 +58,8 @@ class ReleaseCommandTest extends TestCase
 
     public function testThatItCreatesANewReleaseAndNotPushToRemote(): void
     {
-        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy);
+        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy, $this->changelogGenerator);
+        $this->changelogGenerator->shouldReceive('getChanges');
 
         $application = new Application();
         $application->add($command);
@@ -66,7 +75,8 @@ class ReleaseCommandTest extends TestCase
 
     public function testThatItUsesAVersioningStrategyToDetermineTheNextVersion(): void
     {
-        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy);
+        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy, $this->changelogGenerator);
+        $this->changelogGenerator->shouldReceive('getChanges');
 
         $application = new Application();
         $application->add($command);
