@@ -6,6 +6,7 @@ Inspired by [Liip RMT](https://github.com/liip/RMT), this release tool helps you
 to automate the release of new versions of your software.
 
 [![Build status](https://img.shields.io/travis/leviy/release-tool.svg)](https://travis-ci.com/leviy/release-tool)
+[![License](https://img.shields.io/github/license/leviy/release-tool.svg)](https://github.com/leviy/release-tool/blob/master/LICENSE.txt)
 
 ## Installation
 
