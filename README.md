@@ -7,7 +7,7 @@ to automate the release of new versions of your software. It is written in PHP
 but can be used for any type of project, as long as you have PHP installed on
 your machine.
 
-[![Build status](https://img.shields.io/travis/leviy/release-tool.svg)](https://travis-ci.com/leviy/release-tool)
+[![Build status](https://travis-ci.com/leviy/release-tool.svg)](https://travis-ci.com/leviy/release-tool)
 [![License](https://img.shields.io/github/license/leviy/release-tool.svg)](https://github.com/leviy/release-tool/blob/master/LICENSE.txt)
 
 ## Installation
