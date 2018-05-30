@@ -5,8 +5,7 @@ namespace Leviy\ReleaseTool\Console\Command;
 
 use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Console\InteractiveInformationCollector;
-use Leviy\ReleaseTool\Vcs\VersionControlSystem;
-use Leviy\ReleaseTool\Versioning\Strategy;
+use Leviy\ReleaseTool\ReleaseManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,28 +17,19 @@ use function sprintf;
 final class ReleaseCommand extends Command
 {
     /**
-     * @var VersionControlSystem
+     * @var ReleaseManager
      */
-    private $versionControlSystem;
-
-    /**
-     * @var Strategy
-     */
-    private $versioningStrategy;
+    private $releaseManager;
 
     /**
      * @var ChangelogGenerator
      */
     private $changelogGenerator;
 
-    public function __construct(
-        VersionControlSystem $versionControlSystem,
-        Strategy $versioningStrategy,
-        ChangelogGenerator $changeLogGenerator
-    ) {
-        $this->versionControlSystem = $versionControlSystem;
-        $this->versioningStrategy = $versioningStrategy;
-        $this->changelogGenerator = $changeLogGenerator;
+    public function __construct(ReleaseManager $releaseManager, ChangelogGenerator $changelogGenerator)
+    {
+        $this->releaseManager = $releaseManager;
+        $this->changelogGenerator = $changelogGenerator;
 
         parent::__construct();
     }
@@ -56,17 +46,20 @@ final class ReleaseCommand extends Command
     {
         if ($input->getArgument('version') === null) {
             $style = new SymfonyStyle($input, $output);
-            $current = $this->versionControlSystem->getLastVersion();
 
-            $informationCollector = new InteractiveInformationCollector($style);
+            $currentVersion = $this->releaseManager->getCurrentVersion();
 
-            $style->text('The previous version on this branch is <info>' . $current . '</info>.');
+            $style->text('The previous version on this branch is <info>' . $currentVersion . '</info>.');
             $style->newLine();
 
             $style->text('A new release will introduce the following changes:');
             $style->listing($this->changelogGenerator->getChanges());
 
-            $input->setArgument('version', $this->versioningStrategy->getNextVersion($current, $informationCollector));
+            $informationCollector = new InteractiveInformationCollector($style);
+
+            $version = $this->releaseManager->determineNextVersion($informationCollector);
+
+            $input->setArgument('version', $version);
         }
     }
 
@@ -83,28 +76,10 @@ final class ReleaseCommand extends Command
             return;
         }
 
-        $this->createVersion($style, $version);
+        $informationCollector = new InteractiveInformationCollector($style);
 
-        $this->pushVersion($style, $version);
+        $this->releaseManager->release($version, $informationCollector);
 
         $style->success('Version ' . $version . ' has been released.');
-    }
-
-    private function createVersion(StyleInterface $style, string $version): void
-    {
-        $style->text('Tagging current branch with new version...');
-
-        $this->versionControlSystem->createVersion($version);
-    }
-
-    private function pushVersion(StyleInterface $style, string $version): void
-    {
-        if (!$style->confirm('Do you want to push version ' . $version . ' to remote?')) {
-            return;
-        }
-
-        $style->text('Pushing the new version to VCS...');
-
-        $this->versionControlSystem->pushVersion($version);
     }
 }

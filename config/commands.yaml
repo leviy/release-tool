@@ -11,6 +11,5 @@ services:
   command.release:
     class: Leviy\ReleaseTool\Console\Command\ReleaseCommand
     arguments:
-      - '@vcs.git'
-      - '@versioning_strategy.semantic'
+      - '@release.manager'
       - '@changelog_generator.pull_request'
