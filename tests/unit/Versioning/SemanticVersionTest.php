@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Tests\Unit\Versioning;
 
+use InvalidArgumentException;
 use Leviy\ReleaseTool\Versioning\SemanticVersion;
 use PHPUnit\Framework\TestCase;
 
@@ -19,27 +20,60 @@ class SemanticVersionTest extends TestCase
         $this->assertSame('1.2.3', $version->getVersion());
     }
 
+    public function testThatItHandlesMultiDigitVersions(): void
+    {
+        $version = SemanticVersion::createFromVersionString('11.20.31');
+
+        $this->assertSame(11, $version->getMajorVersion());
+        $this->assertSame(20, $version->getMinorVersion());
+        $this->assertSame(31, $version->getPatchVersion());
+
+        $this->assertSame('11.20.31', $version->getVersion());
+    }
+
+    /**
+     * @dataProvider getInvalidVersions
+     */
+    public function testThatAnInvalidVersionThrowsAnException(string $invalidVersion): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        SemanticVersion::createFromVersionString($invalidVersion);
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function getInvalidVersions(): array
+    {
+        return [
+            ['1'],
+            ['1.1'],
+            ['foo'],
+        ];
+    }
+
     public function testThatThePatchVersionIsIncremented(): void
     {
-        $version = SemanticVersion::createFromVersionString('1.2.3');
+        $version = SemanticVersion::createFromVersionString('1.2.13');
 
         $newVersion = $version->incrementPatchVersion();
 
-        $this->assertSame('1.2.4', $newVersion->getVersion());
+        $this->assertSame('1.2.14', $newVersion->getVersion());
     }
 
     public function testThatTheVersionInstanceIsNotChanged(): void
     {
-        $version = SemanticVersion::createFromVersionString('1.2.3');
+        $version = SemanticVersion::createFromVersionString('1.2.13');
 
         $version->incrementPatchVersion();
 
-        $this->assertSame('1.2.3', $version->getVersion());
+        $this->assertSame('1.2.13', $version->getVersion());
     }
 
     public function testThatTheMinorVersionIsIncremented(): void
     {
-        $version = SemanticVersion::createFromVersionString('1.2.3');
+        $version = SemanticVersion::createFromVersionString('1.2.13');
 
         $newVersion = $version->incrementMinorVersion();
 
@@ -48,7 +82,7 @@ class SemanticVersionTest extends TestCase
 
     public function testThatTheMajorVersionIsIncremented(): void
     {
-        $version = SemanticVersion::createFromVersionString('1.2.3');
+        $version = SemanticVersion::createFromVersionString('1.2.13');
 
         $newVersion = $version->incrementMajorVersion();
 
