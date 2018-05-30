@@ -36,7 +36,7 @@ final class SemanticVersion
 
     public static function createFromVersionString(string $version): self
     {
-        if (!preg_match('$(\d)\.(\d)\.(\d)$', $version, $matches)) {
+        if (!preg_match('$(\d+)\.(\d+)\.(\d+)$', $version, $matches)) {
             throw new InvalidArgumentException(
                 sprintf('Version number "%s" is not a valid semantic version.', $version)
             );
