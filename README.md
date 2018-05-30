@@ -9,6 +9,8 @@ your machine.
 
 [![Build status](https://travis-ci.com/leviy/release-tool.svg)](https://travis-ci.com/leviy/release-tool)
 [![License](https://img.shields.io/github/license/leviy/release-tool.svg)](https://github.com/leviy/release-tool/blob/master/LICENSE.txt)
+[![Packagist version](https://img.shields.io/packagist/v/leviy/release-tool.svg)](https://packagist.org/packages/leviy/release-tool)
+[![Required PHP version](https://img.shields.io/packagist/php-v/leviy/release-tool.svg)](https://github.com/leviy/release-tool/blob/master/composer.json)
 
 ## Installation
 
