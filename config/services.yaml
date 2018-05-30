@@ -7,6 +7,12 @@ services:
     arguments:
       - 'v'
 
+  release.manager:
+    class: Leviy\ReleaseTool\ReleaseManager
+    arguments:
+      - '@vcs.git'
+      - '@versioning_strategy.semantic'
+
   versioning_strategy.semantic:
     class: Leviy\ReleaseTool\Versioning\SemanticVersioning
 

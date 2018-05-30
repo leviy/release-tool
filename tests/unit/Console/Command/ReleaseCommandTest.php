@@ -5,6 +5,7 @@ namespace Leviy\ReleaseTool\Tests\Unit\Console\Command;
 
 use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
+use Leviy\ReleaseTool\ReleaseManager;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Leviy\ReleaseTool\Versioning\Strategy;
 use Mockery;
@@ -32,16 +33,26 @@ class ReleaseCommandTest extends TestCase
      */
     private $changelogGenerator;
 
+    /**
+     * @var ReleaseManager
+     */
+    private $releaseManager;
+
     protected function setUp(): void
     {
         $this->vcs = Mockery::spy(VersionControlSystem::class);
         $this->versioningStrategy = Mockery::mock(Strategy::class);
         $this->changelogGenerator = Mockery::mock(ChangelogGenerator::class);
+
+        $this->releaseManager = new ReleaseManager(
+            $this->vcs,
+            $this->versioningStrategy
+        );
     }
 
     public function testThatItCreatesANewReleaseAndPushToRemote(): void
     {
-        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy, $this->changelogGenerator);
+        $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
         $this->changelogGenerator->shouldReceive('getChanges');
 
         $application = new Application();
@@ -58,7 +69,7 @@ class ReleaseCommandTest extends TestCase
 
     public function testThatItCreatesANewReleaseAndNotPushToRemote(): void
     {
-        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy, $this->changelogGenerator);
+        $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
         $this->changelogGenerator->shouldReceive('getChanges');
 
         $application = new Application();
@@ -75,7 +86,7 @@ class ReleaseCommandTest extends TestCase
 
     public function testThatItUsesAVersioningStrategyToDetermineTheNextVersion(): void
     {
-        $command = new ReleaseCommand($this->vcs, $this->versioningStrategy, $this->changelogGenerator);
+        $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
         $this->changelogGenerator->shouldReceive('getChanges');
 
         $application = new Application();

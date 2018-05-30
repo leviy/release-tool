@@ -5,6 +5,7 @@ namespace Leviy\ReleaseTool\Tests\Integration\Console;
 
 use Leviy\ReleaseTool\Changelog\PullRequestChangelogGenerator;
 use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
+use Leviy\ReleaseTool\ReleaseManager;
 use Leviy\ReleaseTool\Vcs\Git;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Leviy\ReleaseTool\Versioning\SemanticVersioning;
@@ -19,9 +20,19 @@ class ReleaseCommandTest extends TestCase
      */
     private $versionControlSystem;
 
+    /**
+     * @var ReleaseManager
+     */
+    private $releaseManager;
+
     protected function setUp(): void
     {
         $this->versionControlSystem = new Git('v');
+
+        $this->releaseManager = new ReleaseManager(
+            $this->versionControlSystem,
+            new SemanticVersioning()
+        );
 
         $this->removeGitDirectory();
         Git::execute('init');
@@ -36,8 +47,7 @@ class ReleaseCommandTest extends TestCase
     public function testThatItTagsANewVersion(): void
     {
         $command = new ReleaseCommand(
-            $this->versionControlSystem,
-            new SemanticVersioning(),
+            $this->releaseManager,
             new PullRequestChangelogGenerator($this->versionControlSystem)
         );
 
@@ -52,8 +62,7 @@ class ReleaseCommandTest extends TestCase
     public function testThatItAbortsTheReleaseOnNegativeConfirmation(): void
     {
         $command = new ReleaseCommand(
-            $this->versionControlSystem,
-            new SemanticVersioning(),
+            $this->releaseManager,
             new PullRequestChangelogGenerator($this->versionControlSystem)
         );
 
@@ -77,8 +86,7 @@ class ReleaseCommandTest extends TestCase
         );
 
         $command = new ReleaseCommand(
-            $this->versionControlSystem,
-            new SemanticVersioning(),
+            $this->releaseManager,
             new PullRequestChangelogGenerator($this->versionControlSystem)
         );
 
