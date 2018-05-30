@@ -2,6 +2,7 @@
     "name": "leviy/release-tool",
     "type": "library",
     "description": "Command line tool for releasing new versions of a project",
+    "license": "MIT",
     "require": {
         "php": "^7.1",
         "symfony/config": "^4.0",
