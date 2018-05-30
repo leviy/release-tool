@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Tests\Unit\Versioning;
 
+use InvalidArgumentException;
 use Leviy\ReleaseTool\Versioning\SemanticVersion;
 use PHPUnit\Framework\TestCase;
 
@@ -17,6 +18,28 @@ class SemanticVersionTest extends TestCase
         $this->assertSame(3, $version->getPatchVersion());
 
         $this->assertSame('1.2.3', $version->getVersion());
+    }
+
+    /**
+     * @dataProvider getInvalidVersions
+     */
+    public function testThatAnInvalidVersionThrowsAnException(string $invalidVersion): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        SemanticVersion::createFromVersionString($invalidVersion);
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function getInvalidVersions(): array
+    {
+        return [
+            ['1'],
+            ['1.1'],
+            ['foo'],
+        ];
     }
 
     public function testThatThePatchVersionIsIncremented(): void
