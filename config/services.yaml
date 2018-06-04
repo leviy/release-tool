@@ -2,12 +2,6 @@ services:
   _defaults:
       public: false
 
-  github_guzzle_client:
-    class: GuzzleHttp\Client
-    arguments:
-      - headers:
-          Authorization: token %github_token%
-
   vcs.git:
     class: Leviy\ReleaseTool\Vcs\Git
     arguments:
@@ -18,6 +12,7 @@ services:
     arguments:
       - '@vcs.git'
       - '@versioning_strategy.semantic'
+      - ['@github.release_action.release']
 
   versioning_strategy.semantic:
     class: Leviy\ReleaseTool\Versioning\SemanticVersioning

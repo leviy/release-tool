@@ -1,47 +1,49 @@
 <?php
 declare(strict_types=1);
 
-namespace Leviy\ReleaseTool\Host\GitHub;
+namespace Leviy\ReleaseTool\GitHub;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
+use function json_encode;
 
 class GitHubClient
 {
     /**
-     * @var Client
+     * @var ClientInterface
      */
     private $client;
 
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
-    }
+    /**
+     * @var string
+     */
+    private $owner;
 
     /**
-     * @param string   $version
-     * @param string[] $repositoryInformation
-     *
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @var string
      */
-    public function createRelease(string $version, array $repositoryInformation): void
+    private $repository;
+
+    public function __construct(ClientInterface $client, string $owner, string $repository)
     {
-        $jsonRequestBody = $this->createReleaseRequestBody($version);
+        $this->client = $client;
+        $this->owner = $owner;
+        $this->repository = $repository;
+    }
+
+    public function createRelease(string $version, string $tag): void
+    {
+        $jsonRequestBody = json_encode([
+            'tag_name' => $tag,
+            'name' => $version,
+            'body' => $version,
+        ]);
 
         $this->client->request(
             'POST',
-            'https://api.github.com/repos/' . $repositoryInformation['owner'] . '/' . $repositoryInformation['name'] . '/releases',
+            'https://api.github.com/repos/' . $this->owner . '/' . $this->repository . '/releases',
             [
                 'body' => $jsonRequestBody,
             ]
         );
-    }
-
-    private function createReleaseRequestBody(string $version): string
-    {
-        return json_encode([
-            'tag_name' => $version,
-            'name' => $version,
-            'body' => $version
-        ]);
     }
 }
