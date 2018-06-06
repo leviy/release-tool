@@ -4,12 +4,16 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Tests\Unit\GitHub;
 
 use Leviy\ReleaseTool\GitHub\GitHubRepositoryParser;
+use Leviy\ReleaseTool\GitHub\InvalidUrlException;
 use PHPUnit\Framework\TestCase;
 
 class GitHubRepositoryParserTest extends TestCase
 {
     /**
      * @dataProvider ownerProvider
+     *
+     * @param string $url
+     * @param string $owner
      */
     public function testThatOwnerIsReturned(string $url, string $owner): void
     {
@@ -32,13 +36,16 @@ class GitHubRepositoryParserTest extends TestCase
 
     /**
      * @dataProvider repositoryNameProvider
+     *
+     * @param string $url
+     * @param string $repository
      */
-    public function testThatRepositoryNameIsReturned(): void
+    public function testThatRepositoryNameIsReturned(string $url, string $repository): void
     {
         $parser = new GitHubRepositoryParser();
-        $repository = $parser->getRepository('git@github.com:leviy/release-tool.git');
+        $actualRepository = $parser->getRepository($url);
 
-        $this->assertSame('release-tool', $repository);
+        $this->assertSame($repository, $actualRepository);
     }
 
     /**
@@ -50,5 +57,13 @@ class GitHubRepositoryParserTest extends TestCase
             ['git@github.com:leviy/release-tool.git', 'release-tool'],
             ['git@github.com:symfony/acme.git', 'acme'],
         ];
+    }
+
+    public function testThatExceptionIsThrownForHttpUrl(): void
+    {
+        $this->expectException(InvalidUrlException::class);
+
+        $parser = new GitHubRepositoryParser();
+        $parser->getRepository('https://github.com/leviy/release-tool.git');
     }
 }

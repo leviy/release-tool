@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Tests\Unit;
 
+use Assert\InvalidArgumentException;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
 use Leviy\ReleaseTool\ReleaseAction\ReleaseAction;
 use Leviy\ReleaseTool\ReleaseManager;
@@ -45,6 +46,17 @@ class ReleaseManagerTest extends TestCase
         $this->informationCollector = Mockery::mock(InformationCollector::class);
     }
 
+    public function testThatInstantiationThrowsAnErrorWhenActionIsNotReleaseAction(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $releaseManager = new ReleaseManager(
+            $this->vcs,
+            $this->versioningStrategy,
+            ['test-action']
+        );
+    }
+
     public function testThatVersionIsCreatedAndPushed(): void
     {
         $releaseManager = new ReleaseManager(
@@ -59,8 +71,6 @@ class ReleaseManagerTest extends TestCase
 
         $this->vcs->shouldHaveReceived('createVersion', ['9.1.1']);
         $this->vcs->shouldHaveReceived('pushVersion', ['9.1.1']);
-
-        $this->releaseAction->shouldNotHaveReceived('execute');
     }
 
     public function testThatVersionIsCreatedButNotPushed(): void
@@ -77,8 +87,6 @@ class ReleaseManagerTest extends TestCase
 
         $this->vcs->shouldHaveReceived('createVersion', ['9.1.1']);
         $this->vcs->shouldNotHaveReceived('pushVersion', ['9.1.1']);
-
-        $this->releaseAction->shouldNotHaveReceived('execute');
     }
 
     public function testThatAdditionalActionsAreExecutedDuringRelease(): void

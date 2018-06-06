@@ -5,6 +5,7 @@ namespace Leviy\ReleaseTool\GitHub;
 
 use function explode;
 use function str_replace;
+use function substr;
 
 class GitHubRepositoryParser
 {
@@ -25,8 +26,17 @@ class GitHubRepositoryParser
      */
     private function parseUrl(string $url): array
     {
+        if ($this->isHttpUrl($url)) {
+            throw new InvalidUrlException('Remote must use SSH URL');
+        }
+
         $url = str_replace(['git@github.com:', '.git'], '', $url);
 
         return explode('/', $url);
+    }
+
+    private function isHttpUrl(string $url): bool
+    {
+        return substr($url, 0, 4) === 'http';
     }
 }
