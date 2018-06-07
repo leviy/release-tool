@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\GitHub;
 
+use Assert\Assertion;
 use function explode;
 use function str_replace;
-use function substr;
 
 class GitHubRepositoryParser
 {
@@ -26,17 +26,10 @@ class GitHubRepositoryParser
      */
     private function parseUrl(string $url): array
     {
-        if ($this->isHttpUrl($url)) {
-            throw new InvalidUrlException('Remote must use SSH URL');
-        }
+        Assertion::regex($url, '#git@github.com:(.*)/(.*).git#', 'Value "%s" is not a valid GitHub SSH URL.');
 
         $url = str_replace(['git@github.com:', '.git'], '', $url);
 
         return explode('/', $url);
-    }
-
-    private function isHttpUrl(string $url): bool
-    {
-        return substr($url, 0, 4) === 'http';
     }
 }

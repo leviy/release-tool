@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Tests\Unit\GitHub;
 
+use InvalidArgumentException;
 use Leviy\ReleaseTool\GitHub\GitHubRepositoryParser;
-use Leviy\ReleaseTool\GitHub\InvalidUrlException;
 use PHPUnit\Framework\TestCase;
 
 class GitHubRepositoryParserTest extends TestCase
@@ -59,11 +59,29 @@ class GitHubRepositoryParserTest extends TestCase
         ];
     }
 
-    public function testThatExceptionIsThrownForHttpUrl(): void
+    /**
+     * @dataProvider getInvalidUrls
+     */
+    public function testThatAnExceptionIsThrownForAnInvalidUrl(string $invalidUrl): void
     {
-        $this->expectException(InvalidUrlException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $parser = new GitHubRepositoryParser();
-        $parser->getRepository('https://github.com/leviy/release-tool.git');
+        $parser->getRepository($invalidUrl);
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function getInvalidUrls(): array
+    {
+        return [
+            [''],
+            ['foo'],
+            ['https://github.com/leviy/release-tool.git'],
+            ['github.com:leviy/release-tool.git'],
+            ['git@github.com:leviy.git'],
+            ['git@bitbucket.org/leviy/release-tool.git'],
+        ];
     }
 }
