@@ -98,10 +98,15 @@ final class Git implements VersionControlSystem
      */
     public function getCommitsSinceLastVersion(?string $pattern = null): array
     {
-        $arguments = [
-            $this->getTagForVersion($this->getLastVersion()) . '..HEAD',
-            '--format="%s%x1F%b%x1E"',
-        ];
+        try {
+            $arguments = [
+                $this->getTagForVersion($this->getLastVersion()) . '..HEAD',
+            ];
+        } catch (ReleaseNotFoundException $exception) {
+            $arguments = [];
+        }
+
+        $arguments[] = '--format="%s%x1F%b%x1E"';
 
         if ($pattern !== null) {
             $arguments[] = '--grep="' . $pattern . '"';
