@@ -11,7 +11,7 @@ check: static-analysis unit-tests integration-tests coding-standards
 
 static-analysis: vendor
 	vendor/bin/parallel-lint $(sources)
-	vendor/bin/phpstan analyse --level=7 $(sources)
+	vendor/bin/phpstan analyse --level=7 --configuration=phpstan.neon $(sources)
 
 unit-tests: vendor
 	vendor/bin/phpunit --testsuite unit-tests

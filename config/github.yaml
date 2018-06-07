@@ -1,0 +1,28 @@
+services:
+  _defaults:
+      public: false
+
+  github.guzzle_client:
+    class: GuzzleHttp\Client
+    arguments:
+      - headers:
+          Authorization: token %credentials.github.token%
+
+  github.repository_parser:
+    class: Leviy\ReleaseTool\GitHub\GitHubRepositoryParser
+
+  github.client_factory:
+    class: Leviy\ReleaseTool\GitHub\GitHubClientFactory
+    arguments:
+      - '@github.repository_parser'
+      - '@github.guzzle_client'
+
+  github.client:
+    class: Leviy\ReleaseTool\GitHub\GitHubClient
+    factory: 'github.client_factory:createClient'
+
+  github.release_action.release:
+    class: Leviy\ReleaseTool\ReleaseAction\GitHubReleaseAction
+    arguments:
+      - '@github.client'
+      - '@vcs.git'

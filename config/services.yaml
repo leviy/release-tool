@@ -12,6 +12,7 @@ services:
     arguments:
       - '@vcs.git'
       - '@versioning_strategy.semantic'
+      - ['@github.release_action.release']
 
   versioning_strategy.semantic:
     class: Leviy\ReleaseTool\Versioning\SemanticVersioning

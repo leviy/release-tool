@@ -31,7 +31,8 @@ class ReleaseCommandTest extends TestCase
 
         $this->releaseManager = new ReleaseManager(
             $this->versionControlSystem,
-            new SemanticVersioning()
+            new SemanticVersioning(),
+            []
         );
 
         $this->removeGitDirectory();

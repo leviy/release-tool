@@ -126,13 +126,13 @@ final class Git implements VersionControlSystem
         return $commits;
     }
 
+    public function getTagForVersion(string $version): string
+    {
+        return $this->tagPrefix . $version;
+    }
+
     private function getVersionFromTag(string $tag): string
     {
         return substr($tag, strlen($this->tagPrefix));
-    }
-
-    private function getTagForVersion(string $version): string
-    {
-        return $this->tagPrefix . $version;
     }
 }
