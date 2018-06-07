@@ -5,5 +5,11 @@ namespace Leviy\ReleaseTool\ReleaseAction;
 
 interface ReleaseAction
 {
-    public function execute(string $version): void;
+    /**
+     * @param string   $version
+     * @param string[] $changeset
+     *
+     * @return void
+     */
+    public function execute(string $version, array $changeset): void;
 }

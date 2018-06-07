@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool;
 
 use Assert\Assertion;
+use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
 use Leviy\ReleaseTool\ReleaseAction\ReleaseAction;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
@@ -23,6 +24,11 @@ class ReleaseManager
     private $versioningStrategy;
 
     /**
+     * @var ChangelogGenerator
+     */
+    private $changelogGenerator;
+
+    /**
      * @var ReleaseAction[]
      */
     private $actions;
@@ -30,11 +36,13 @@ class ReleaseManager
     /**
      * @param VersionControlSystem $versionControlSystem
      * @param Strategy             $versioningStrategy
+     * @param ChangelogGenerator   $changelogGenerator
      * @param ReleaseAction[]      $actions
      */
     public function __construct(
         VersionControlSystem $versionControlSystem,
         Strategy $versioningStrategy,
+        ChangelogGenerator $changelogGenerator,
         array $actions
     ) {
         Assertion::allIsInstanceOf($actions, ReleaseAction::class);
@@ -42,6 +50,7 @@ class ReleaseManager
         $this->versionControlSystem = $versionControlSystem;
         $this->versioningStrategy = $versioningStrategy;
         $this->actions = $actions;
+        $this->changelogGenerator = $changelogGenerator;
     }
 
     public function getCurrentVersion(): string
@@ -51,6 +60,8 @@ class ReleaseManager
 
     public function release(string $version, InformationCollector $informationCollector): void
     {
+        $changeset = $this->changelogGenerator->getChanges();
+
         $this->versionControlSystem->createVersion($version);
 
         $question = 'A VCS tag has been created for version ' . $version . '. ';
@@ -62,8 +73,8 @@ class ReleaseManager
 
         $this->versionControlSystem->pushVersion($version);
 
-        array_walk($this->actions, function (ReleaseAction $releaseAction) use ($version): void {
-            $releaseAction->execute($version);
+        array_walk($this->actions, function (ReleaseAction $releaseAction) use ($version, $changeset): void {
+            $releaseAction->execute($version, $changeset);
         });
     }
 
