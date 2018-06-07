@@ -73,12 +73,12 @@ class ReleaseManagerTest extends TestCase
         $this->vcs->shouldHaveReceived('pushVersion', ['9.1.1']);
     }
 
-    public function testThatVersionIsCreatedButNotPushed(): void
+    public function testThatTheTagIsNotPushedAndReleaseStepsAreAbortedWhenUserDoesNotConfirm(): void
     {
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            []
+            [$this->releaseAction]
         );
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturnFalse();
@@ -87,6 +87,7 @@ class ReleaseManagerTest extends TestCase
 
         $this->vcs->shouldHaveReceived('createVersion', ['9.1.1']);
         $this->vcs->shouldNotHaveReceived('pushVersion', ['9.1.1']);
+        $this->releaseAction->shouldNotHaveReceived('execute');
     }
 
     public function testThatAdditionalActionsAreExecutedDuringRelease(): void
@@ -97,7 +98,7 @@ class ReleaseManagerTest extends TestCase
             [$this->releaseAction]
         );
 
-        $this->informationCollector->shouldReceive('askConfirmation')->andReturnFalse();
+        $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
 
         $releaseManager->release('9.1.1', $this->informationCollector);
 
@@ -115,7 +116,7 @@ class ReleaseManagerTest extends TestCase
             [$releaseAction, $additionalAction]
         );
 
-        $this->informationCollector->shouldReceive('askConfirmation')->andReturnFalse();
+        $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
 
         $releaseAction->shouldReceive('execute')->once()->globally()->ordered();
         $additionalAction->shouldReceive('execute')->once()->globally()->ordered();

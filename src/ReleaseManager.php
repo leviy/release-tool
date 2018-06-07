@@ -53,9 +53,14 @@ class ReleaseManager
     {
         $this->versionControlSystem->createVersion($version);
 
-        if ($informationCollector->askConfirmation('Do you want to push version ' . $version . ' to remote?')) {
-            $this->versionControlSystem->pushVersion($version);
+        $question = 'A VCS tag has been created for version ' . $version . '. ';
+        $question .= 'Do you want to push it to the remote repository and perform additional release steps?';
+
+        if (!$informationCollector->askConfirmation($question)) {
+            return;
         }
+
+        $this->versionControlSystem->pushVersion($version);
 
         array_walk($this->actions, function (ReleaseAction $releaseAction) use ($version): void {
             $releaseAction->execute($version);
