@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\ReleaseAction;
 
 use Leviy\ReleaseTool\GitHub\GitHubClient;
-use Leviy\ReleaseTool\Vcs\VersionControlSystem;
+use Leviy\ReleaseTool\Vcs\Git;
 
 final class GitHubReleaseAction implements ReleaseAction
 {
@@ -14,19 +14,19 @@ final class GitHubReleaseAction implements ReleaseAction
     private $client;
 
     /**
-     * @var VersionControlSystem
+     * @var Git
      */
-    private $vcs;
+    private $git;
 
-    public function __construct(GitHubClient $client, VersionControlSystem $vcs)
+    public function __construct(GitHubClient $client, Git $git)
     {
         $this->client = $client;
-        $this->vcs = $vcs;
+        $this->git = $git;
     }
 
     public function execute(string $version): void
     {
-        $tag = $this->vcs->getTagForVersion($version);
+        $tag = $this->git->getTagForVersion($version);
 
         $this->client->createRelease($version, $tag);
     }
