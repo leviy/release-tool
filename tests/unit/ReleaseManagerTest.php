@@ -9,7 +9,8 @@ use Leviy\ReleaseTool\Interaction\InformationCollector;
 use Leviy\ReleaseTool\ReleaseAction\ReleaseAction;
 use Leviy\ReleaseTool\ReleaseManager;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
-use Leviy\ReleaseTool\Versioning\Strategy;
+use Leviy\ReleaseTool\Versioning\SemanticVersion;
+use Leviy\ReleaseTool\Versioning\VersioningScheme;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -25,7 +26,7 @@ class ReleaseManagerTest extends TestCase
     private $vcs;
 
     /**
-     * @var MockInterface|Strategy
+     * @var MockInterface|VersioningScheme
      */
     private $versioningStrategy;
 
@@ -47,7 +48,7 @@ class ReleaseManagerTest extends TestCase
     public function setUp(): void
     {
         $this->vcs = Mockery::spy(VersionControlSystem::class);
-        $this->versioningStrategy = Mockery::mock(Strategy::class);
+        $this->versioningStrategy = Mockery::mock(VersioningScheme::class);
         $this->changelogGenerator = Mockery::mock(ChangelogGenerator::class);
         $this->releaseAction = Mockery::spy(ReleaseAction::class);
         $this->informationCollector = Mockery::mock(InformationCollector::class);
@@ -77,6 +78,9 @@ class ReleaseManagerTest extends TestCase
         );
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
+        $this->versioningStrategy
+            ->shouldReceive('getVersion')
+            ->andReturn(SemanticVersion::createFromVersionString('9.1.1'));
 
         $releaseManager->release('9.1.1', $this->informationCollector);
 
@@ -94,6 +98,9 @@ class ReleaseManagerTest extends TestCase
         );
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturnFalse();
+        $this->versioningStrategy
+            ->shouldReceive('getVersion')
+            ->andReturn(SemanticVersion::createFromVersionString('9.1.1'));
 
         $releaseManager->release('9.1.1', $this->informationCollector);
 
@@ -112,6 +119,9 @@ class ReleaseManagerTest extends TestCase
         );
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
+        $this->versioningStrategy
+            ->shouldReceive('getVersion')
+            ->andReturn(SemanticVersion::createFromVersionString('9.1.1'));
 
         $releaseManager->release('9.1.1', $this->informationCollector);
 
@@ -131,6 +141,9 @@ class ReleaseManagerTest extends TestCase
         );
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
+        $this->versioningStrategy
+            ->shouldReceive('getVersion')
+            ->andReturn(SemanticVersion::createFromVersionString('9.1.1'));
 
         $releaseAction->shouldReceive('execute')->once()->globally()->ordered();
         $additionalAction->shouldReceive('execute')->once()->globally()->ordered();

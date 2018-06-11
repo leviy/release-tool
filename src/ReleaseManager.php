@@ -8,7 +8,7 @@ use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
 use Leviy\ReleaseTool\ReleaseAction\ReleaseAction;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
-use Leviy\ReleaseTool\Versioning\Strategy;
+use Leviy\ReleaseTool\Versioning\VersioningScheme;
 use function array_walk;
 
 class ReleaseManager
@@ -19,9 +19,9 @@ class ReleaseManager
     private $versionControlSystem;
 
     /**
-     * @var Strategy
+     * @var VersioningScheme
      */
-    private $versioningStrategy;
+    private $versioningScheme;
 
     /**
      * @var ChangelogGenerator
@@ -35,20 +35,20 @@ class ReleaseManager
 
     /**
      * @param VersionControlSystem $versionControlSystem
-     * @param Strategy             $versioningStrategy
+     * @param VersioningScheme     $versioningScheme
      * @param ChangelogGenerator   $changelogGenerator
      * @param ReleaseAction[]      $actions
      */
     public function __construct(
         VersionControlSystem $versionControlSystem,
-        Strategy $versioningStrategy,
+        VersioningScheme $versioningScheme,
         ChangelogGenerator $changelogGenerator,
         array $actions
     ) {
         Assertion::allIsInstanceOf($actions, ReleaseAction::class);
 
         $this->versionControlSystem = $versionControlSystem;
-        $this->versioningStrategy = $versioningStrategy;
+        $this->versioningScheme = $versioningScheme;
         $this->actions = $actions;
         $this->changelogGenerator = $changelogGenerator;
     }
@@ -58,20 +58,22 @@ class ReleaseManager
         return $this->versionControlSystem->getLastVersion();
     }
 
-    public function release(string $version, InformationCollector $informationCollector): void
+    public function release(string $versionString, InformationCollector $informationCollector): void
     {
         $changeset = $this->changelogGenerator->getChanges();
 
-        $this->versionControlSystem->createVersion($version);
+        $this->versionControlSystem->createVersion($versionString);
 
-        $question = 'A VCS tag has been created for version ' . $version . '. ';
+        $question = 'A VCS tag has been created for version ' . $versionString . '. ';
         $question .= 'Do you want to push it to the remote repository and perform additional release steps?';
 
         if (!$informationCollector->askConfirmation($question)) {
             return;
         }
 
-        $this->versionControlSystem->pushVersion($version);
+        $this->versionControlSystem->pushVersion($versionString);
+
+        $version = $this->versioningScheme->getVersion($versionString);
 
         array_walk($this->actions, function (ReleaseAction $releaseAction) use ($version, $changeset): void {
             $releaseAction->execute($version, $changeset);
@@ -81,7 +83,16 @@ class ReleaseManager
     public function determineNextVersion(InformationCollector $informationCollector): string
     {
         $current = $this->versionControlSystem->getLastVersion();
+        $currentVersion = $this->versioningScheme->getVersion($current);
 
-        return $this->versioningStrategy->getNextVersion($current, $informationCollector);
+        return $this->versioningScheme->getNextVersion($currentVersion, $informationCollector)->getVersion();
+    }
+
+    public function determineNextPreReleaseVersion(InformationCollector $informationCollector): string
+    {
+        $current = $this->versionControlSystem->getLastVersion();
+        $currentVersion = $this->versioningScheme->getVersion($current);
+
+        return $this->versioningScheme->getNextPreReleaseVersion($currentVersion, $informationCollector)->getVersion();
     }
 }

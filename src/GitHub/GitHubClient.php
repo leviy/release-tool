@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\GitHub;
 
 use GuzzleHttp\ClientInterface;
+use Leviy\ReleaseTool\Versioning\Version;
 use function json_encode;
 
 class GitHubClient
@@ -30,13 +31,14 @@ class GitHubClient
         $this->repository = $repository;
     }
 
-    public function createRelease(string $version, string $tag, string $body): void
+    public function createRelease(Version $version, string $tag, string $body): void
     {
         $jsonRequestBody = json_encode(
             [
                 'tag_name' => $tag,
-                'name' => $version,
+                'name' => $version->getVersion(),
                 'body' => $body,
+                'prerelease' => $version->isPreRelease(),
             ]
         );
 
