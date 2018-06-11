@@ -9,6 +9,7 @@ use Leviy\ReleaseTool\Interaction\InformationCollector;
 use Leviy\ReleaseTool\ReleaseAction\ReleaseAction;
 use Leviy\ReleaseTool\ReleaseManager;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
+use Leviy\ReleaseTool\Versioning\SemanticVersion;
 use Leviy\ReleaseTool\Versioning\VersioningScheme;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -77,6 +78,9 @@ class ReleaseManagerTest extends TestCase
         );
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
+        $this->versioningStrategy
+            ->shouldReceive('getVersion')
+            ->andReturn(SemanticVersion::createFromVersionString('9.1.1'));
 
         $releaseManager->release('9.1.1', $this->informationCollector);
 
@@ -94,6 +98,9 @@ class ReleaseManagerTest extends TestCase
         );
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturnFalse();
+        $this->versioningStrategy
+            ->shouldReceive('getVersion')
+            ->andReturn(SemanticVersion::createFromVersionString('9.1.1'));
 
         $releaseManager->release('9.1.1', $this->informationCollector);
 
@@ -112,6 +119,9 @@ class ReleaseManagerTest extends TestCase
         );
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
+        $this->versioningStrategy
+            ->shouldReceive('getVersion')
+            ->andReturn(SemanticVersion::createFromVersionString('9.1.1'));
 
         $releaseManager->release('9.1.1', $this->informationCollector);
 
@@ -131,6 +141,9 @@ class ReleaseManagerTest extends TestCase
         );
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
+        $this->versioningStrategy
+            ->shouldReceive('getVersion')
+            ->andReturn(SemanticVersion::createFromVersionString('9.1.1'));
 
         $releaseAction->shouldReceive('execute')->once()->globally()->ordered();
         $additionalAction->shouldReceive('execute')->once()->globally()->ordered();

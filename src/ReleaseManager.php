@@ -58,20 +58,22 @@ class ReleaseManager
         return $this->versionControlSystem->getLastVersion();
     }
 
-    public function release(string $version, InformationCollector $informationCollector): void
+    public function release(string $versionString, InformationCollector $informationCollector): void
     {
         $changeset = $this->changelogGenerator->getChanges();
 
-        $this->versionControlSystem->createVersion($version);
+        $this->versionControlSystem->createVersion($versionString);
 
-        $question = 'A VCS tag has been created for version ' . $version . '. ';
+        $question = 'A VCS tag has been created for version ' . $versionString . '. ';
         $question .= 'Do you want to push it to the remote repository and perform additional release steps?';
 
         if (!$informationCollector->askConfirmation($question)) {
             return;
         }
 
-        $this->versionControlSystem->pushVersion($version);
+        $this->versionControlSystem->pushVersion($versionString);
+
+        $version = $this->versioningScheme->getVersion($versionString);
 
         array_walk($this->actions, function (ReleaseAction $releaseAction) use ($version, $changeset): void {
             $releaseAction->execute($version, $changeset);

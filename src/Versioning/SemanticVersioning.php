@@ -7,6 +7,11 @@ use Leviy\ReleaseTool\Interaction\InformationCollector;
 
 final class SemanticVersioning implements VersioningScheme
 {
+    public function getVersion(string $version): Version
+    {
+        return SemanticVersion::createFromVersionString($version);
+    }
+
     public function getNextVersion(string $currentVersion, InformationCollector $informationCollector): string
     {
         $version = SemanticVersion::createFromVersionString($currentVersion);

@@ -6,6 +6,7 @@ namespace Leviy\ReleaseTool\ReleaseAction;
 use Leviy\ReleaseTool\Changelog\Formatter\Formatter;
 use Leviy\ReleaseTool\GitHub\GitHubClient;
 use Leviy\ReleaseTool\Vcs\Git;
+use Leviy\ReleaseTool\Versioning\Version;
 use function implode;
 use const PHP_EOL;
 
@@ -36,9 +37,9 @@ final class GitHubReleaseAction implements ReleaseAction
     /**
      * @inheritdoc
      */
-    public function execute(string $version, array $changeset): void
+    public function execute(Version $version, array $changeset): void
     {
-        $tag = $this->git->getTagForVersion($version);
+        $tag = $this->git->getTagForVersion($version->getVersion());
 
         $body = implode(PHP_EOL, $this->changelogFormatter->formatChanges($changeset));
 

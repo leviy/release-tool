@@ -7,5 +7,7 @@ use Leviy\ReleaseTool\Interaction\InformationCollector;
 
 interface VersioningScheme
 {
+    public function getVersion(string $version): Version;
+
     public function getNextVersion(string $currentVersion, InformationCollector $informationCollector): string;
 }
