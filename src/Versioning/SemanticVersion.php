@@ -10,7 +10,7 @@ use function sprintf;
 /**
  * See https://semver.org/
  */
-final class SemanticVersion
+final class SemanticVersion implements Version
 {
     /**
      * @var int
