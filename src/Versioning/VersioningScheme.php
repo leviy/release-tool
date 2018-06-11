@@ -5,7 +5,7 @@ namespace Leviy\ReleaseTool\Versioning;
 
 use Leviy\ReleaseTool\Interaction\InformationCollector;
 
-interface Strategy
+interface VersioningScheme
 {
     public function getNextVersion(string $currentVersion, InformationCollector $informationCollector): string;
 }

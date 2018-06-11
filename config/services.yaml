@@ -11,11 +11,11 @@ services:
     class: Leviy\ReleaseTool\ReleaseManager
     arguments:
       - '@vcs.git'
-      - '@versioning_strategy.semantic'
+      - '@versioning_scheme.semantic'
       - '@changelog_generator.pull_request'
       - ['@github.release_action.release']
 
-  versioning_strategy.semantic:
+  versioning_scheme.semantic:
     class: Leviy\ReleaseTool\Versioning\SemanticVersioning
 
   changelog_generator.pull_request:

@@ -7,7 +7,7 @@ use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
 use Leviy\ReleaseTool\ReleaseManager;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
-use Leviy\ReleaseTool\Versioning\Strategy;
+use Leviy\ReleaseTool\Versioning\VersioningScheme;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
@@ -24,7 +24,7 @@ class ReleaseCommandTest extends TestCase
     private $vcs;
 
     /**
-     * @var MockInterface|Strategy
+     * @var MockInterface|VersioningScheme
      */
     private $versioningStrategy;
 
@@ -41,7 +41,7 @@ class ReleaseCommandTest extends TestCase
     protected function setUp(): void
     {
         $this->vcs = Mockery::spy(VersionControlSystem::class);
-        $this->versioningStrategy = Mockery::mock(Strategy::class);
+        $this->versioningStrategy = Mockery::mock(VersioningScheme::class);
         $this->changelogGenerator = Mockery::mock(ChangelogGenerator::class);
 
         $this->releaseManager = Mockery::spy(ReleaseManager::class);

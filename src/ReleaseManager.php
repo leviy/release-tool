@@ -8,7 +8,7 @@ use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
 use Leviy\ReleaseTool\ReleaseAction\ReleaseAction;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
-use Leviy\ReleaseTool\Versioning\Strategy;
+use Leviy\ReleaseTool\Versioning\VersioningScheme;
 use function array_walk;
 
 class ReleaseManager
@@ -19,9 +19,9 @@ class ReleaseManager
     private $versionControlSystem;
 
     /**
-     * @var Strategy
+     * @var VersioningScheme
      */
-    private $versioningStrategy;
+    private $versioningScheme;
 
     /**
      * @var ChangelogGenerator
@@ -35,20 +35,20 @@ class ReleaseManager
 
     /**
      * @param VersionControlSystem $versionControlSystem
-     * @param Strategy             $versioningStrategy
+     * @param VersioningScheme     $versioningScheme
      * @param ChangelogGenerator   $changelogGenerator
      * @param ReleaseAction[]      $actions
      */
     public function __construct(
         VersionControlSystem $versionControlSystem,
-        Strategy $versioningStrategy,
+        VersioningScheme $versioningScheme,
         ChangelogGenerator $changelogGenerator,
         array $actions
     ) {
         Assertion::allIsInstanceOf($actions, ReleaseAction::class);
 
         $this->versionControlSystem = $versionControlSystem;
-        $this->versioningStrategy = $versioningStrategy;
+        $this->versioningScheme = $versioningScheme;
         $this->actions = $actions;
         $this->changelogGenerator = $changelogGenerator;
     }
@@ -82,6 +82,6 @@ class ReleaseManager
     {
         $current = $this->versionControlSystem->getLastVersion();
 
-        return $this->versioningStrategy->getNextVersion($current, $informationCollector);
+        return $this->versioningScheme->getNextVersion($current, $informationCollector);
     }
 }
