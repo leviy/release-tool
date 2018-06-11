@@ -20,6 +20,11 @@ final class SemanticVersioning implements VersioningScheme
         return SemanticVersion::createFromVersionString($version);
     }
 
+    public function isValidVersion(string $version): bool
+    {
+        return SemanticVersion::isValid($version);
+    }
+
     public function getNextVersion(Version $currentVersion, InformationCollector $informationCollector): Version
     {
         if (!$currentVersion instanceof SemanticVersion) {

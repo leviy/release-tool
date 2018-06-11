@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Tests\Unit\Console\Command;
 
+use InvalidArgumentException;
 use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
 use Leviy\ReleaseTool\ReleaseManager;
@@ -47,10 +48,25 @@ class ReleaseCommandTest extends TestCase
         $this->releaseManager = Mockery::spy(ReleaseManager::class);
     }
 
+    public function testThatItFailsIfTheProvidedVersionIsInvalid(): void
+    {
+        $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
+        $this->changelogGenerator->shouldReceive('getChanges');
+        $this->releaseManager->shouldReceive('isValidVersion')->andReturnFalse();
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $commandTester = new CommandTester($command);
+
+        $commandTester->setInputs(['yes']);
+        $commandTester->execute(['version' => '1.2.0']);
+    }
+
     public function testThatItReleasesANewVersion(): void
     {
         $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
         $this->changelogGenerator->shouldReceive('getChanges');
+        $this->releaseManager->shouldReceive('isValidVersion')->andReturnTrue();
 
         $commandTester = new CommandTester($command);
 
@@ -64,6 +80,7 @@ class ReleaseCommandTest extends TestCase
     {
         $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
         $this->changelogGenerator->shouldReceive('getChanges');
+        $this->releaseManager->shouldReceive('isValidVersion')->andReturnTrue();
 
         $commandTester = new CommandTester($command);
 
@@ -77,6 +94,7 @@ class ReleaseCommandTest extends TestCase
     {
         $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
         $this->changelogGenerator->shouldReceive('getChanges');
+        $this->releaseManager->shouldReceive('isValidVersion')->andReturnTrue();
 
         $this->releaseManager->shouldReceive('determineNextVersion')->andReturn('2.3.0');
 
