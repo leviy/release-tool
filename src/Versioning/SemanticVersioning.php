@@ -5,9 +5,16 @@ namespace Leviy\ReleaseTool\Versioning;
 
 use InvalidArgumentException;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
+use function explode;
 
 final class SemanticVersioning implements VersioningScheme
 {
+    private const PRE_RELEASE_TYPES = [
+        'alpha' => 'alpha',
+        'beta' => 'beta',
+        'rc' => 'release candidate',
+    ];
+
     public function getVersion(string $version): Version
     {
         return SemanticVersion::createFromVersionString($version);
@@ -42,13 +49,20 @@ final class SemanticVersioning implements VersioningScheme
             throw new InvalidArgumentException('Current version must be a SemanticVersion instance');
         }
 
+        if ($currentVersion->isPreRelease()) {
+            $currentPreReleaseType = explode('.', $currentVersion->getPreReleaseIdentifier())[0];
+
+            $defaultPreReleaseType = self::PRE_RELEASE_TYPES[$currentPreReleaseType] ?? null;
+        }
+
         $type = $informationCollector->askMultipleChoice(
             'What kind of pre-release do you want to release?',
             [
-                'a' => 'Alpha',
-                'b' => 'Beta',
-                'rc' => 'Release Candidate',
-            ]
+                'a' => 'alpha',
+                'b' => 'beta',
+                'rc' => 'release candidate',
+            ],
+            $defaultPreReleaseType ?? null
         );
 
         if ($type === 'a') {
