@@ -83,7 +83,16 @@ class ReleaseManager
     public function determineNextVersion(InformationCollector $informationCollector): string
     {
         $current = $this->versionControlSystem->getLastVersion();
+        $currentVersion = $this->versioningScheme->getVersion($current);
 
-        return $this->versioningScheme->getNextVersion($current, $informationCollector);
+        return $this->versioningScheme->getNextVersion($currentVersion, $informationCollector)->getVersion();
+    }
+
+    public function determineNextPreReleaseVersion(InformationCollector $informationCollector): string
+    {
+        $current = $this->versionControlSystem->getLastVersion();
+        $currentVersion = $this->versioningScheme->getVersion($current);
+
+        return $this->versioningScheme->getNextPreReleaseVersion($currentVersion, $informationCollector)->getVersion();
     }
 }

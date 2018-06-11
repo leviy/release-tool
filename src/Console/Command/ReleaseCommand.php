@@ -9,6 +9,7 @@ use Leviy\ReleaseTool\ReleaseManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\StyleInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -39,7 +40,13 @@ final class ReleaseCommand extends Command
         $this
             ->setName('release')
             ->setDescription('Release a new version')
-            ->addArgument('version', InputArgument::OPTIONAL, 'The version number for the new release');
+            ->addArgument('version', InputArgument::OPTIONAL, 'The version number for the new release')
+            ->addOption(
+                'pre-release',
+                'p',
+                InputOption::VALUE_NONE,
+                'Generate a pre-release (alpha/beta/rc) version. Ignored when a version number is provided'
+            );
     }
 
     protected function interact(InputInterface $input, OutputInterface $output): void
@@ -56,6 +63,14 @@ final class ReleaseCommand extends Command
             $style->listing($this->changelogGenerator->getChanges());
 
             $informationCollector = new InteractiveInformationCollector($style);
+
+            if ($input->getOption('pre-release')) {
+                $version = $this->releaseManager->determineNextPreReleaseVersion($informationCollector);
+
+                $input->setArgument('version', $version);
+
+                return;
+            }
 
             $version = $this->releaseManager->determineNextVersion($informationCollector);
 

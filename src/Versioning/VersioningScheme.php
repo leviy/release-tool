@@ -9,5 +9,10 @@ interface VersioningScheme
 {
     public function getVersion(string $version): Version;
 
-    public function getNextVersion(string $currentVersion, InformationCollector $informationCollector): string;
+    public function getNextVersion(Version $currentVersion, InformationCollector $informationCollector): Version;
+
+    public function getNextPreReleaseVersion(
+        Version $currentVersion,
+        InformationCollector $informationCollector
+    ): Version;
 }

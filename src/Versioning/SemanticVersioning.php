@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Versioning;
 
+use InvalidArgumentException;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
 
 final class SemanticVersioning implements VersioningScheme
@@ -12,18 +13,52 @@ final class SemanticVersioning implements VersioningScheme
         return SemanticVersion::createFromVersionString($version);
     }
 
-    public function getNextVersion(string $currentVersion, InformationCollector $informationCollector): string
+    public function getNextVersion(Version $currentVersion, InformationCollector $informationCollector): Version
     {
-        $version = SemanticVersion::createFromVersionString($currentVersion);
+        if (!$currentVersion instanceof SemanticVersion) {
+            throw new InvalidArgumentException('Current version must be a SemanticVersion instance');
+        }
 
         if ($informationCollector->askConfirmation('Does this release contain backward incompatible changes?')) {
-            return $version->incrementMajorVersion()->getVersion();
+            return $currentVersion->incrementMajorVersion();
         }
 
         if ($informationCollector->askConfirmation('Does this release contain new features?')) {
-            return $version->incrementMinorVersion()->getVersion();
+            return $currentVersion->incrementMinorVersion();
         }
 
-        return $version->incrementPatchVersion()->getVersion();
+        return $currentVersion->incrementPatchVersion();
+    }
+
+    public function getNextPreReleaseVersion(
+        Version $currentVersion,
+        InformationCollector $informationCollector
+    ): Version {
+        if (!$currentVersion->isPreRelease()) {
+            $currentVersion = $this->getNextVersion($currentVersion, $informationCollector);
+        }
+
+        if (!$currentVersion instanceof SemanticVersion) {
+            throw new InvalidArgumentException('Current version must be a SemanticVersion instance');
+        }
+
+        $type = $informationCollector->askMultipleChoice(
+            'What kind of pre-release do you want to release?',
+            [
+                'a' => 'Alpha',
+                'b' => 'Beta',
+                'rc' => 'Release Candidate',
+            ]
+        );
+
+        if ($type === 'a') {
+            return $currentVersion->createAlphaRelease();
+        }
+
+        if ($type === 'b') {
+            return $currentVersion->createBetaRelease();
+        }
+
+        return $currentVersion->createReleaseCandidate();
     }
 }
