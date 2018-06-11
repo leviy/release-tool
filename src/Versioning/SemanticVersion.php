@@ -4,8 +4,12 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Versioning;
 
 use InvalidArgumentException;
+use function array_pop;
+use function explode;
+use function implode;
 use function preg_match;
 use function sprintf;
+use function strpos;
 
 /**
  * See https://semver.org/
@@ -51,6 +55,21 @@ final class SemanticVersion implements Version
         return new self((int) $matches[1], (int) $matches[2], (int) $matches[3], $matches[4] ?? null);
     }
 
+    public function createAlphaRelease(): self
+    {
+        return $this->createPreRelease('alpha');
+    }
+
+    public function createBetaRelease(): self
+    {
+        return $this->createPreRelease('beta');
+    }
+
+    public function createReleaseCandidate(): self
+    {
+        return $this->createPreRelease('rc');
+    }
+
     public function incrementPatchVersion(): self
     {
         $clone = clone $this;
@@ -79,7 +98,7 @@ final class SemanticVersion implements Version
 
     public function getVersion(): string
     {
-        if (!empty($this->preRelease)) {
+        if ($this->isPreRelease()) {
             return sprintf('%d.%d.%d-%s', $this->major, $this->minor, $this->patch, $this->preRelease);
         }
 
@@ -109,5 +128,26 @@ final class SemanticVersion implements Version
     public function isPreRelease(): bool
     {
         return !empty($this->preRelease);
+    }
+
+    private function createPreRelease(string $type): self
+    {
+        if ($this->preRelease !== null && strpos($this->preRelease, $type) === 0) {
+            $identifiers = explode('.', $this->preRelease);
+            $number = array_pop($identifiers);
+            $identifiers[] = ++$number;
+
+            return $this->withPreReleaseLabel(implode('.', $identifiers));
+        }
+
+        return $this->withPreReleaseLabel($type . '.1');
+    }
+
+    private function withPreReleaseLabel(string $label): self
+    {
+        $clone = clone $this;
+        $clone->preRelease = $label;
+
+        return $clone;
     }
 }
