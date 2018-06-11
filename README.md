@@ -60,12 +60,22 @@ vendor/bin/release release 1.0.0
 This will release version 1.0.0. By default, this will create a prefixed,
 annotated Git tag, in this case `v1.0.0`.
 
+#### Automatically generating a version number
+
 After tagging a first version, you can let the tool calculate the new version
 number for you based on the current version and a number of questions. To do so,
 omit the version from the previous command:
 
 ```bash
 vendor/bin/release release
+```
+
+#### Pre-release versions
+
+If you want to create a pre-release (alpha/beta/rc) version, run:
+
+```bash
+vendor/bin/release release --pre-release
 ```
 
 ### Other commands
