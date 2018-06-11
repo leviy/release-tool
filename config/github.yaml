@@ -11,18 +11,16 @@ services:
   github.repository_parser:
     class: Leviy\ReleaseTool\GitHub\GitHubRepositoryParser
 
-  github.client_factory:
-    class: Leviy\ReleaseTool\GitHub\GitHubClientFactory
-    arguments:
-      - '@github.repository_parser'
-      - '@github.guzzle_client'
-
   github.client:
     class: Leviy\ReleaseTool\GitHub\GitHubClient
-    factory: 'github.client_factory:createClient'
+    arguments:
+      - '@github.guzzle_client'
+      - '%github.owner%'
+      - '%github.repo%'
 
   github.release_action.release:
     class: Leviy\ReleaseTool\ReleaseAction\GitHubReleaseAction
     arguments:
       - '@github.client'
       - '@vcs.git'
+      - '@changelog_formatter.markdown'

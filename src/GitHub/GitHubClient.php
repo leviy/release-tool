@@ -30,13 +30,15 @@ class GitHubClient
         $this->repository = $repository;
     }
 
-    public function createRelease(string $version, string $tag): void
+    public function createRelease(string $version, string $tag, string $body): void
     {
-        $jsonRequestBody = json_encode([
-            'tag_name' => $tag,
-            'name' => $version,
-            'body' => $version,
-        ]);
+        $jsonRequestBody = json_encode(
+            [
+                'tag_name' => $tag,
+                'name' => $version,
+                'body' => $body,
+            ]
+        );
 
         $this->client->request(
             'POST',

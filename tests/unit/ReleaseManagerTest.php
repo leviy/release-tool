@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Tests\Unit;
 
 use Assert\InvalidArgumentException;
+use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
 use Leviy\ReleaseTool\ReleaseAction\ReleaseAction;
 use Leviy\ReleaseTool\ReleaseManager;
@@ -34,6 +35,11 @@ class ReleaseManagerTest extends TestCase
     private $informationCollector;
 
     /**
+     * @var MockInterface|ChangelogGenerator
+     */
+    private $changelogGenerator;
+
+    /**
      * @var MockInterface|ReleaseAction
      */
     private $releaseAction;
@@ -42,8 +48,11 @@ class ReleaseManagerTest extends TestCase
     {
         $this->vcs = Mockery::spy(VersionControlSystem::class);
         $this->versioningStrategy = Mockery::mock(Strategy::class);
+        $this->changelogGenerator = Mockery::mock(ChangelogGenerator::class);
         $this->releaseAction = Mockery::spy(ReleaseAction::class);
         $this->informationCollector = Mockery::mock(InformationCollector::class);
+
+        $this->changelogGenerator->shouldReceive('getChanges')->andReturn([]);
     }
 
     public function testThatInstantiationThrowsAnErrorWhenActionIsNotReleaseAction(): void
@@ -53,6 +62,7 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
+            $this->changelogGenerator,
             ['test-action']
         );
     }
@@ -62,6 +72,7 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
+            $this->changelogGenerator,
             []
         );
 
@@ -78,6 +89,7 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
+            $this->changelogGenerator,
             [$this->releaseAction]
         );
 
@@ -95,6 +107,7 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
+            $this->changelogGenerator,
             [$this->releaseAction]
         );
 
@@ -113,6 +126,7 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
+            $this->changelogGenerator,
             [$releaseAction, $additionalAction]
         );
 

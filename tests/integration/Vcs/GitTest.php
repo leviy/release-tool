@@ -13,7 +13,7 @@ class GitTest extends TestCase
     protected function setUp(): void
     {
         Git::execute('init');
-        $this->commitFile('README.md');
+        $this->commitFile('README.md', 'Initial commit');
     }
 
     protected function tearDown(): void
@@ -89,6 +89,15 @@ class GitTest extends TestCase
 
         $this->assertCount(1, $commits);
         $this->assertSame('New commit message', $commits[0]->title);
+    }
+
+    public function testThatCommitsSinceTheFirstCommitAreReturnedIfNoReleasesExist(): void
+    {
+        $git = new Git();
+        $commits = $git->getCommitsSinceLastVersion();
+
+        $this->assertCount(1, $commits);
+        $this->assertSame('Initial commit', $commits[0]->title);
     }
 
     public function testThatCommitsAreFilteredByPattern(): void

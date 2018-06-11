@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\ReleaseAction;
 
+use Leviy\ReleaseTool\Changelog\Formatter\Formatter;
 use Leviy\ReleaseTool\GitHub\GitHubClient;
 use Leviy\ReleaseTool\Vcs\Git;
+use function implode;
+use const PHP_EOL;
 
 final class GitHubReleaseAction implements ReleaseAction
 {
@@ -18,16 +21,27 @@ final class GitHubReleaseAction implements ReleaseAction
      */
     private $git;
 
-    public function __construct(GitHubClient $client, Git $git)
+    /**
+     * @var Formatter
+     */
+    private $changelogFormatter;
+
+    public function __construct(GitHubClient $client, Git $git, Formatter $changelogFormatter)
     {
         $this->client = $client;
         $this->git = $git;
+        $this->changelogFormatter = $changelogFormatter;
     }
 
-    public function execute(string $version): void
+    /**
+     * @inheritdoc
+     */
+    public function execute(string $version, array $changeset): void
     {
         $tag = $this->git->getTagForVersion($version);
 
-        $this->client->createRelease($version, $tag);
+        $body = implode(PHP_EOL, $this->changelogFormatter->formatChanges($changeset));
+
+        $this->client->createRelease($version, $tag, $body);
     }
 }

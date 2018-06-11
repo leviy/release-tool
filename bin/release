@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Leviy\ReleaseTool\Configuration\CredentialsConfiguration;
+use Leviy\ReleaseTool\GitHub\GitHubRepositoryParser;
+use Leviy\ReleaseTool\Vcs\Git;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application;
@@ -38,6 +40,11 @@ $processedConfiguration = $processor->processConfiguration(
     $configuration,
     $config
 );
+
+$githubParser = new GitHubRepositoryParser();
+$url = Git::execute('remote get-url origin')[0];
+$container->setParameter('github.owner', $githubParser->getOwner($url));
+$container->setParameter('github.repo', $githubParser->getRepository($url));
 
 $container->setParameter('credentials.github.token', $processedConfiguration['github']['token']);
 

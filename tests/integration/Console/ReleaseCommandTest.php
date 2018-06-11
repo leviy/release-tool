@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Tests\Integration\Console;
 
+use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Changelog\PullRequestChangelogGenerator;
 use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
 use Leviy\ReleaseTool\ReleaseManager;
@@ -25,13 +26,20 @@ class ReleaseCommandTest extends TestCase
      */
     private $releaseManager;
 
+    /**
+     * @var ChangelogGenerator
+     */
+    private $changelogGenerator;
+
     protected function setUp(): void
     {
         $this->versionControlSystem = new Git('v');
+        $this->changelogGenerator = new PullRequestChangelogGenerator($this->versionControlSystem);
 
         $this->releaseManager = new ReleaseManager(
             $this->versionControlSystem,
             new SemanticVersioning(),
+            $this->changelogGenerator,
             []
         );
 
