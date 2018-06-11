@@ -32,6 +32,30 @@ class SemanticVersionTest extends TestCase
     }
 
     /**
+     * @dataProvider getPreReleaseVersions
+     */
+    public function testThatAPreReleaseVersionCanBeCreated(string $versionString, string $preReleaseString): void
+    {
+        $version = SemanticVersion::createFromVersionString($versionString);
+
+        $this->assertSame($preReleaseString, $version->getPreReleaseIdentifier());
+        $this->assertSame($versionString, $version->getVersion());
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function getPreReleaseVersions(): array
+    {
+        return [
+            ['1.0.0-alpha', 'alpha'],
+            ['1.0.0-alpha.1', 'alpha.1'],
+            ['1.0.0-0.3.7', '0.3.7'],
+            ['1.0.0-x.7.z.92', 'x.7.z.92'],
+        ];
+    }
+
+    /**
      * @dataProvider getInvalidVersions
      */
     public function testThatAnInvalidVersionThrowsAnException(string $invalidVersion): void
