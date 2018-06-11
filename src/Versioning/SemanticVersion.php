@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Versioning;
 
 use InvalidArgumentException;
+use LogicException;
 use function array_pop;
 use function explode;
 use function implode;
@@ -68,6 +69,18 @@ final class SemanticVersion implements Version
     public function createReleaseCandidate(): self
     {
         return $this->createPreRelease('rc');
+    }
+
+    public function release(): self
+    {
+        if (!$this->isPreRelease()) {
+            throw new LogicException('Trying to release a version that is not a pre-release');
+        }
+
+        $clone = clone $this;
+        $clone->preRelease = null;
+
+        return $clone;
     }
 
     public function incrementPatchVersion(): self

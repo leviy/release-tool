@@ -156,4 +156,16 @@ class SemanticVersioningTest extends TestCase
 
         $this->assertEquals(SemanticVersion::createFromVersionString('1.1.0-alpha.2'), $version);
     }
+
+    public function testThatReleasingAPreReleaseDoesNotIncreaseTheVersionNumber(): void
+    {
+        $semver = new SemanticVersioning();
+
+        $version = $semver->getNextVersion(
+            SemanticVersion::createFromVersionString('1.1.0-alpha.1'),
+            $this->informationCollector
+        );
+
+        $this->assertEquals(SemanticVersion::createFromVersionString('1.1.0'), $version);
+    }
 }

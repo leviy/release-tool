@@ -26,6 +26,10 @@ final class SemanticVersioning implements VersioningScheme
             throw new InvalidArgumentException('Current version must be a SemanticVersion instance');
         }
 
+        if ($currentVersion->isPreRelease()) {
+            return $currentVersion->release();
+        }
+
         if ($informationCollector->askConfirmation('Does this release contain backward incompatible changes?')) {
             return $currentVersion->incrementMajorVersion();
         }
