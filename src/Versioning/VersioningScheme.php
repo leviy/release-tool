@@ -9,6 +9,8 @@ interface VersioningScheme
 {
     public function getVersion(string $version): Version;
 
+    public function isValidVersion(string $version): bool;
+
     public function getNextVersion(Version $currentVersion, InformationCollector $informationCollector): Version;
 
     public function getNextPreReleaseVersion(

@@ -13,20 +13,12 @@ class SemanticVersionTest extends TestCase
     {
         $version = SemanticVersion::createFromVersionString('1.2.3');
 
-        $this->assertSame(1, $version->getMajorVersion());
-        $this->assertSame(2, $version->getMinorVersion());
-        $this->assertSame(3, $version->getPatchVersion());
-
         $this->assertSame('1.2.3', $version->getVersion());
     }
 
     public function testThatItHandlesMultiDigitVersions(): void
     {
         $version = SemanticVersion::createFromVersionString('11.20.31');
-
-        $this->assertSame(11, $version->getMajorVersion());
-        $this->assertSame(20, $version->getMinorVersion());
-        $this->assertSame(31, $version->getPatchVersion());
 
         $this->assertSame('11.20.31', $version->getVersion());
     }
@@ -71,9 +63,10 @@ class SemanticVersionTest extends TestCase
     public function getInvalidVersions(): array
     {
         return [
+            ['foo'],
             ['1'],
             ['1.1'],
-            ['foo'],
+            ['v1.0.0'],
         ];
     }
 

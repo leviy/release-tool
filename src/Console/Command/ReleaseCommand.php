@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Console\Command;
 
+use InvalidArgumentException;
 use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Console\InteractiveInformationCollector;
 use Leviy\ReleaseTool\ReleaseManager;
@@ -84,6 +85,10 @@ final class ReleaseCommand extends Command
         $style = new SymfonyStyle($input, $output);
 
         $version = $input->getArgument('version');
+
+        if (!$this->releaseManager->isValidVersion($version)) {
+            throw new InvalidArgumentException(sprintf('Version "%s" is not a valid version number', $version));
+        }
 
         $style->text(sprintf('This will release version <info>%s</info>.', $version));
 

@@ -95,4 +95,9 @@ class ReleaseManager
 
         return $this->versioningScheme->getNextPreReleaseVersion($currentVersion, $informationCollector)->getVersion();
     }
+
+    public function isValidVersion(string $version): bool
+    {
+        return $this->versioningScheme->isValidVersion($version);
+    }
 }

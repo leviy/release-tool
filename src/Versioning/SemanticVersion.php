@@ -14,9 +14,13 @@ use function strpos;
 
 /**
  * See https://semver.org/
+ *
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 final class SemanticVersion implements Version
 {
+    private const VERSION_PATTERN = '/^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.]+))?$/';
+
     /**
      * @var int
      */
@@ -47,13 +51,18 @@ final class SemanticVersion implements Version
 
     public static function createFromVersionString(string $version): self
     {
-        if (!preg_match('/^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.]+))?$/', $version, $matches)) {
+        if (!preg_match(self::VERSION_PATTERN, $version, $matches)) {
             throw new InvalidArgumentException(
                 sprintf('Version number "%s" is not a valid semantic version.', $version)
             );
         }
 
         return new self((int) $matches[1], (int) $matches[2], (int) $matches[3], $matches[4] ?? null);
+    }
+
+    public static function isValid(string $version): bool
+    {
+        return preg_match(self::VERSION_PATTERN, $version) === 1;
     }
 
     public function createAlphaRelease(): self
@@ -116,21 +125,6 @@ final class SemanticVersion implements Version
         }
 
         return sprintf('%d.%d.%d', $this->major, $this->minor, $this->patch);
-    }
-
-    public function getMajorVersion(): int
-    {
-        return $this->major;
-    }
-
-    public function getMinorVersion(): int
-    {
-        return $this->minor;
-    }
-
-    public function getPatchVersion(): int
-    {
-        return $this->patch;
     }
 
     public function getPreReleaseIdentifier(): ?string
