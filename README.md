@@ -35,30 +35,18 @@ composer require --dev leviy/release-tool
 
 ## Configuration
 
-### Configuring GitHub (one-time step)
+### GitHub personal access token
 
-First create a Personal Access Token on Github so that the release tool can use the GitHub API.
-You can get a token by clicking [here](https://github.com/settings/tokens/new?scopes=repo&description=Leviy+Release+Tool) and entering your GitHub password to prefill the fields in the form,
-otherwise you can press the `generate new token` button on [this page](https://github.com/settings/tokens/) and allow everything inside the repo scope.
-
-Next create a directory `.release-tool` inside your home folder (`~` on linux, user folder on windows).
-Inside that folder create an `auth.yml` file with the following contents:
+This tool requires a personal access token with `repo` scope to create GitHub
+releases. Create one [here](https://github.com/settings/tokens/new?scopes=repo&description=Leviy+Release+Tool)
+and store it in `.release-tool/auth.yml` in your home folder (`~` on Linux, user
+folder on Windows):
 
 ```yml
 credentials:
   github:
-    token: <github_token_from_previous_step>
+    token: <token>
 ```
-
-For example:
-`~/.release-tool/auth.yml`
-```yml
-credentials:
-  github:
-    token: 088qqr97753f5nez7o85ywcp8owagmd61p9qg1mc
-```
-
-The release tool is now configured to be able to work with GitHub on this PC!
 
 ## Usage
 
