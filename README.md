@@ -16,7 +16,7 @@ your machine.
 
 
 ### Phar
-The recommended method of installing this package is using a PHAR file. This is because installing using Composer can possibly cause dependency conflicts. You can download the most recent phar from the [Github Releases](https://github.com/leviy/release-tool/releases/latest) page.
+The recommended method of installing this package is using a phar file. This is because installing using Composer can possibly cause dependency conflicts. You can download the most recent phar from the [Github Releases](https://github.com/leviy/release-tool/releases/latest) page.
 
 ### Composer
 Alternatively, you can install this package using [Composer](https://getcomposer.org/):
