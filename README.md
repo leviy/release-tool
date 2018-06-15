@@ -12,8 +12,16 @@ your machine.
 [![GitHub release](https://img.shields.io/github/release/leviy/release-tool.svg)](https://github.com/leviy/release-tool/releases/latest)
 [![Required PHP version](https://img.shields.io/packagist/php-v/leviy/release-tool.svg)](https://github.com/leviy/release-tool/blob/master/composer.json)
 
-## Installation
+## Features
 
+- Determines the next version number based on
+  [semantic versioning](https://semver.org/)
+- Creates an annotated Git tag and pushes it to the remote repository
+- Creates a GitHub release with the name of the release and a changelog with
+  changes since the previous version
+- Supports pre-release (alpha/beta/rc) versions
+
+## Installation
 
 ### Phar
 The recommended method of installing this package is using a phar file. This is because installing using Composer can possibly cause dependency conflicts. You can download the most recent phar from the [Github Releases](https://github.com/leviy/release-tool/releases/latest) page.
