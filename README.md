@@ -54,12 +54,17 @@ The release tool is now configured to be able to work with GitHub on this PC!
 
 ## Usage
 
+> Note: these usage instructions assume that you have downloaded the
+> `release-tool.phar` file to your project directory. If you have installed it
+> in a different location, update the commands accordingly. If you have
+> installed the tool as a Composer dependency, use `vendor/bin/release` instead.
+
 ### Releasing a new version
 
-Use ```vendor/bin/release release <version>``` to release a version. For example:
+Use ```release-tool.phar release <version>``` to release a version. For example:
 
 ```bash
-vendor/bin/release release 1.0.0
+release-tool.phar release 1.0.0
 ```
 
 This will release version 1.0.0. By default, this will create a prefixed,
@@ -72,7 +77,7 @@ number for you based on the current version and a number of questions. To do so,
 omit the version from the previous command:
 
 ```bash
-vendor/bin/release release
+release-tool.phar release
 ```
 
 #### Pre-release versions
@@ -80,9 +85,9 @@ vendor/bin/release release
 If you want to create a pre-release (alpha/beta/rc) version, run:
 
 ```bash
-vendor/bin/release release --pre-release
+release-tool.phar release --pre-release
 ```
 
 ### Other commands
 
-Run ```vendor/bin/release list``` to see a list of available commands.
+Run ```release-tool.phar list``` to see a list of available commands.
