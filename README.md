@@ -9,12 +9,17 @@ your machine.
 
 [![Build status](https://travis-ci.com/leviy/release-tool.svg)](https://travis-ci.com/leviy/release-tool)
 [![License](https://img.shields.io/github/license/leviy/release-tool.svg)](https://github.com/leviy/release-tool/blob/master/LICENSE.txt)
-[![Packagist version](https://img.shields.io/packagist/v/leviy/release-tool.svg)](https://packagist.org/packages/leviy/release-tool)
+[![GitHub release](https://img.shields.io/github/release/leviy/release-tool.svg)](https://github.com/leviy/release-tool/releases/latest)
 [![Required PHP version](https://img.shields.io/packagist/php-v/leviy/release-tool.svg)](https://github.com/leviy/release-tool/blob/master/composer.json)
 
 ## Installation
 
-Install this package using [Composer](https://getcomposer.org/):
+
+### Phar
+The recommended method of installing this package is using a phar file. This is because installing using Composer can possibly cause dependency conflicts. You can download the most recent phar from the [Github Releases](https://github.com/leviy/release-tool/releases/latest) page.
+
+### Composer
+Alternatively, you can install this package using [Composer](https://getcomposer.org/):
 
 ```bash
 composer require --dev leviy/release-tool

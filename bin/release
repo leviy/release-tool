@@ -51,7 +51,7 @@ $container->setParameter('credentials.github.token', $processedConfiguration['gi
 $container->addCompilerPass(new AddConsoleCommandPass);
 $container->compile();
 
-$application = new Application('Leviy Release Tool');
+$application = new Application('Leviy Release Tool', '@package_version@');
 
 /** @var string[] $commandIds */
 $commandIds = $container->getParameter('console.command.ids');
