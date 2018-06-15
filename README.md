@@ -14,11 +14,15 @@ your machine.
 
 ## Installation
 
+### Composer
 Install this package using [Composer](https://getcomposer.org/):
 
 ```bash
 composer require --dev leviy/release-tool
 ```
+
+### PHAR
+If you cannot install it using Composer because of a dependency conflict, you can download the most recent PHAR from the [Github Releases](https://github.com/leviy/release-tool/releases) page.
 
 ## Configuration
 
