@@ -28,6 +28,6 @@ bin/box.phar:
 	chmod a+x bin/box.phar
 
 dist: bin/box.phar
-	mkdir build
+	mkdir -p build
 	bin/box.phar compile
 
