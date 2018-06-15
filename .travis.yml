@@ -8,4 +8,16 @@ php:
   - '7.1'
   - '7.2'
 
-script: make check
+script:
+    - make check
+    - make dist
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_API_KEY
+  file_glob: true
+  file: build/*
+  skip_cleanup: true
+  on:
+    tags: true
+    php: '7.1'

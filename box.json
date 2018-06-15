@@ -1,0 +1,16 @@
+{
+    "chmod": "0755",
+    "directories": [
+        "src",
+        "config",
+        "vendor"
+    ],
+    "files": [
+        "LICENSE.txt",
+        "README.md"
+    ],
+    "git-version": "package_version",
+    "main": "bin/release",
+    "output": "build/release-tool.phar",
+    "stub": true
+}
