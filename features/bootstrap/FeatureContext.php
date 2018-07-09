@@ -88,6 +88,8 @@ class FeatureContext implements Context
             case 'release candidate':
                 $answer = 'rc';
                 break;
+            default:
+                return;
         }
 
         $this->informationCollector->shouldReceive('askMultipleChoice')->andReturn($answer);
