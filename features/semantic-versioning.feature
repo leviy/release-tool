@@ -1,19 +1,19 @@
 Feature: Calculating a version number based on semantic versioning
 
   Scenario: Releasing a major version
-    Given the latest release on this branch is "1.0.0"
+    Given the latest release on this branch is "1.2.1"
     When I release a new major version
     Then version "2.0.0" should be released
 
   Scenario: Releasing a minor version
-    Given the latest release on this branch is "1.0.0"
+    Given the latest release on this branch is "1.2.1"
     When I release a new minor version
-    Then version "1.1.0" should be released
+    Then version "1.3.0" should be released
 
   Scenario: Releasing a patch version
-    Given the latest release on this branch is "1.0.9"
+    Given the latest release on this branch is "1.4.9"
     When I release a new patch version
-    Then version "1.0.10" should be released
+    Then version "1.4.10" should be released
 
   Scenario: Releasing an alpha version of a major release
     Given the latest release on this branch is "1.0.0"
