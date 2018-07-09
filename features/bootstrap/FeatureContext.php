@@ -58,9 +58,10 @@ class FeatureContext implements Context
     }
 
     /**
+     * @When I release a new version
      * @When I release a new :type version
      */
-    public function iReleaseANewVersion(string $type): void
+    public function iReleaseANewVersion(?string $type = null): void
     {
         $this->selectVersionType($type);
 
@@ -68,8 +69,7 @@ class FeatureContext implements Context
     }
 
     /**
-     * @When I release a(n) :preReleaseType version
-     * @When /^I release a (release candidate)$/
+     * @When /^I release an? (release candidate|alpha|beta)(?: version)?$/
      * @When I release a(n) :preReleaseType version of a new :type release
      */
     public function iReleaseAPreReleaseVersion(string $preReleaseType, ?string $type = null): void
@@ -104,7 +104,7 @@ class FeatureContext implements Context
         Assert::assertSame($version, $this->nextVersion);
     }
 
-    private function selectVersionType(string $type): void
+    private function selectVersionType(?string $type): void
     {
         switch ($type) {
             case 'major':
@@ -117,7 +117,8 @@ class FeatureContext implements Context
                 $answers = [false, false];
                 break;
             default:
-                return;
+                $answers = [];
+                break;
         }
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturn(...$answers);

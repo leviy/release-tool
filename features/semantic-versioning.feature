@@ -37,5 +37,5 @@ Feature: Calculating a version number based on semantic versioning
 
   Scenario: Releasing after a pre-release
     Given the latest release on this branch is "2.0.0-beta.2"
-    When I release a new major version
+    When I release a new version
     Then version "2.0.0" should be released
