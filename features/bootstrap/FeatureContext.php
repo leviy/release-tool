@@ -104,19 +104,20 @@ class FeatureContext implements Context
         Assert::assertSame($version, $this->nextVersion);
     }
 
-    /**
-     * @return void
-     */
     private function selectVersionType(string $type): void
     {
-        if ($type === 'major') {
-            $answers = [true];
-        } elseif ($type === 'minor') {
-            $answers = [false, true];
-        } elseif ($type === 'patch') {
-            $answers = [false, false];
-        } else {
-            return;
+        switch ($type) {
+            case 'major':
+                $answers = [true];
+                break;
+            case 'minor':
+                $answers = [false, true];
+                break;
+            case 'patch':
+                $answers = [false, false];
+                break;
+            default:
+                return;
         }
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturn(...$answers);
