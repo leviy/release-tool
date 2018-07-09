@@ -50,7 +50,7 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Given a release on this branch with version :version
+     * @Given the latest release on this branch is :version
      */
     public function aReleaseOnThisBranchWithVersion(string $version): void
     {
