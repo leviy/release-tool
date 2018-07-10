@@ -13,6 +13,7 @@
         "symfony/yaml": "^4.0"
     },
     "require-dev": {
+        "behat/behat": "^3.4",
         "jakub-onderka/php-console-highlighter": "^0.3.2",
         "jakub-onderka/php-parallel-lint": "^1.0",
         "leviy/coding-standard": "^3.4",
