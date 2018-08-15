@@ -21,11 +21,7 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
 }
 
 $container = new ContainerBuilder();
-
-$loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../config'));
-$loader->load('services.yaml');
-$loader->load('github.yaml');
-$loader->load('commands.yaml');
+$application = new Application($container);
 
 $homeDirectory = rtrim(getenv('HOME') ?: getenv('USERPROFILE'), '/\\');
 
@@ -49,8 +45,6 @@ $container->setParameter('credentials.github.token', $processedConfiguration['gi
 
 $container->addCompilerPass(new AddConsoleCommandPass);
 $container->compile();
-
-$application = new Application();
 
 /** @var string[] $commandIds */
 $commandIds = $container->getParameter('console.command.ids');
