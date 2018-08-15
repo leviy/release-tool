@@ -20,6 +20,10 @@
         <testsuite name="integration-tests">
             <directory>tests/integration</directory>
         </testsuite>
+
+        <testsuite name="system-tests">
+            <directory>tests/system</directory>
+        </testsuite>
     </testsuites>
 
     <filter>

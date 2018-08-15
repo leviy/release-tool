@@ -2,65 +2,16 @@
 <?php
 declare(strict_types=1);
 
-use Leviy\ReleaseTool\Configuration\CredentialsConfiguration;
-use Leviy\ReleaseTool\GitHub\GitHubRepositoryParser;
-use Leviy\ReleaseTool\Vcs\Git;
-use Symfony\Component\Config\Definition\Processor;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
+use Leviy\ReleaseTool\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\Yaml\Yaml;
 
-foreach ([__DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php'] as $file) {
-    if (file_exists($file)) {
-        require $file;
-        break;
-    }
+if (file_exists(__DIR__ . '/../../../autoload.php')) {
+    require __DIR__ . '/../../../autoload.php';
+} else {
+    require __DIR__ . '/../vendor/autoload.php';
 }
 
 $container = new ContainerBuilder();
-
-$loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../config'));
-$loader->load('services.yaml');
-$loader->load('github.yaml');
-$loader->load('commands.yaml');
-
-$homeDirectory = rtrim(getenv('HOME') ?: getenv('USERPROFILE'), '/\\');
-
-$config = Yaml::parse(
-    file_get_contents($homeDirectory.'/.release-tool/auth.yml')
-);
-
-$processor = new Processor();
-$configuration = new CredentialsConfiguration();
-$processedConfiguration = $processor->processConfiguration(
-    $configuration,
-    $config
-);
-
-$githubParser = new GitHubRepositoryParser();
-$url = Git::execute('remote get-url origin')[0];
-$container->setParameter('github.owner', $githubParser->getOwner($url));
-$container->setParameter('github.repo', $githubParser->getRepository($url));
-
-$container->setParameter('credentials.github.token', $processedConfiguration['github']['token']);
-
-$container->addCompilerPass(new AddConsoleCommandPass);
-$container->compile();
-
-$application = new Application('Leviy Release Tool', '@package_version@');
-
-/** @var string[] $commandIds */
-$commandIds = $container->getParameter('console.command.ids');
-
-foreach ($commandIds as $commandId) {
-    /** @var Command $command */
-    $command = $container->get($commandId);
-
-    $application->add($command);
-}
+$application = new Application($container);
 
 $application->run();
