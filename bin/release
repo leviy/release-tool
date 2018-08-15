@@ -2,18 +2,8 @@
 <?php
 declare(strict_types=1);
 
-use Leviy\ReleaseTool\Configuration\CredentialsConfiguration;
 use Leviy\ReleaseTool\Console\Application;
-use Leviy\ReleaseTool\GitHub\GitHubRepositoryParser;
-use Leviy\ReleaseTool\Vcs\Git;
-use Symfony\Component\Config\Definition\Processor;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
-use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\Yaml\Yaml;
 
 if (file_exists(__DIR__ . '/../../../autoload.php')) {
     require __DIR__ . '/../../../autoload.php';
