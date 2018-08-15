@@ -9,9 +9,12 @@ php:
   - '7.1'
   - '7.2'
 
+install:
+  - mkdir $HOME/.release-tool && cp tests/system/auth.yml $HOME/.release-tool
+
 script:
-    - make check
-    - make dist
+  - make check
+  - make dist
 
 deploy:
   provider: releases

@@ -32,7 +32,8 @@
     "autoload-dev": {
         "psr-4": {
             "Leviy\\ReleaseTool\\Tests\\Unit\\": "tests/unit",
-            "Leviy\\ReleaseTool\\Tests\\Integration\\": "tests/integration"
+            "Leviy\\ReleaseTool\\Tests\\Integration\\": "tests/integration",
+            "Leviy\\ReleaseTool\\Tests\\System\\": "tests/system"
         }
     },
     "bin": [

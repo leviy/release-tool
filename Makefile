@@ -7,7 +7,7 @@ all: vendor
 vendor: composer.json $(wildcard composer.lock)
 	composer install
 
-check: static-analysis unit-tests integration-tests acceptance-tests coding-standards
+check: static-analysis unit-tests integration-tests acceptance-tests system-tests coding-standards
 
 static-analysis: vendor
 	vendor/bin/parallel-lint $(sources)
@@ -21,6 +21,9 @@ integration-tests: vendor
 
 acceptance-tests: vendor
 	vendor/bin/behat
+
+system-tests: vendor
+	vendor/bin/phpunit --testsuite system-tests
 
 coding-standards: vendor
 	vendor/bin/phpcs -p --colors
