@@ -24,30 +24,4 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
 $container = new ContainerBuilder();
 $application = new Application($container);
 
-$homeDirectory = rtrim(getenv('HOME') ?: getenv('USERPROFILE'), '/\\');
-
-$config = Yaml::parse(
-    file_get_contents($homeDirectory.'/.release-tool/auth.yml')
-);
-
-$processor = new Processor();
-$configuration = new CredentialsConfiguration();
-$processedConfiguration = $processor->processConfiguration(
-    $configuration,
-    $config
-);
-
-$githubParser = new GitHubRepositoryParser();
-$url = Git::execute('remote get-url origin')[0];
-$container->setParameter('github.owner', $githubParser->getOwner($url));
-$container->setParameter('github.repo', $githubParser->getRepository($url));
-
-$container->setParameter('credentials.github.token', $processedConfiguration['github']['token']);
-
-$container->addCompilerPass(new AddConsoleCommandPass);
-$container->compile();
-
-/** @var CommandLoaderInterface $commandLoader */
-$commandLoader = $container->get('console.command_loader');
-$application->setCommandLoader($commandLoader);
 $application->run();
