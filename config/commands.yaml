@@ -1,15 +1,15 @@
 services:
-  _defaults:
-    tags:
-      - { name: 'console.command' }
-
   command.current:
     class: Leviy\ReleaseTool\Console\Command\CurrentCommand
     arguments:
       - '@vcs.git'
+    tags:
+      - { name: console.command, command: current }
 
   command.release:
     class: Leviy\ReleaseTool\Console\Command\ReleaseCommand
     arguments:
       - '@release.manager'
       - '@changelog_generator.pull_request'
+    tags:
+      - { name: console.command, command: release }

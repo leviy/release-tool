@@ -9,6 +9,7 @@ use Leviy\ReleaseTool\Vcs\Git;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -46,14 +47,7 @@ $container->setParameter('credentials.github.token', $processedConfiguration['gi
 $container->addCompilerPass(new AddConsoleCommandPass);
 $container->compile();
 
-/** @var string[] $commandIds */
-$commandIds = $container->getParameter('console.command.ids');
-
-foreach ($commandIds as $commandId) {
-    /** @var Command $command */
-    $command = $container->get($commandId);
-
-    $application->add($command);
-}
-
+/** @var CommandLoaderInterface $commandLoader */
+$commandLoader = $container->get('console.command_loader');
+$application->setCommandLoader($commandLoader);
 $application->run();
