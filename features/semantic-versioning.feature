@@ -1,4 +1,14 @@
-Feature: Calculating a version number based on semantic versioning
+Feature: Semantic versioning
+  In order to release a new version of a piece of software with a meaningful version number
+  As a software developer
+  I want to determine the next version number based on semantic versioning
+
+  Rules:
+  - A version number consists of MAJOR.MINOR.PATCH versions
+  - Increment the MAJOR version when introducing incompatible API changes
+  - Increment the MINOR version when adding functionality in a backwards-compatible manner
+  - Increment the PATCH version when making backwards-compatible bug fixes
+  - Use a label after the PATCH version to indicate an unstable pre-release
 
   Scenario: Releasing a major version
     Given the latest release on this branch is "1.2.1"
