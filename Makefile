@@ -4,7 +4,7 @@ sources = bin/release src/
 
 all: vendor
 
-vendor: composer.json $(wildcard composer.lock)
+vendor: composer.json composer.lock
 	composer install
 
 check: static-analysis unit-tests integration-tests acceptance-tests system-tests coding-standards
