@@ -36,5 +36,5 @@ coding-standards: vendor
 	vendor/bin/phpmd src/ text phpmd.xml
 
 bin/box.phar:
-	curl -LS https://github.com/humbug/box/releases/download/3.0.0-beta.3/box.phar -o bin/box.phar
+	curl -LS https://github.com/humbug/box/releases/download/3.0.0-RC.0/box.phar -o bin/box.phar
 	chmod a+x bin/box.phar

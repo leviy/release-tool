@@ -1,10 +1,7 @@
 {
-    "chmod": "0755",
     "directories-bin": [
         "config"
     ],
     "git-version": "package_version",
-    "main": "bin/release",
-    "output": "build/release-tool.phar",
-    "stub": true
+    "output": "build/release-tool.phar"
 }
