@@ -22,7 +22,7 @@ final class Application extends SymfonyApplication
 {
     private const NAME = 'Leviy Release Tool';
 
-    private const VERSION = '@package_version@';
+    public const VERSION = '@package_version@';
 
     public function __construct(ContainerBuilder $container)
     {

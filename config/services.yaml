@@ -27,3 +27,10 @@ services:
     class: Leviy\ReleaseTool\Changelog\Formatter\MarkdownFormatter
     arguments:
       - '%github.owner%/%github.repo%'
+
+  phar_updater:
+    class: Humbug\SelfUpdate\Updater
+    arguments:
+      - null
+      - false
+      - github

@@ -87,3 +87,11 @@ release-tool.phar release --pre-release
 ### Other commands
 
 Run ```release-tool.phar list``` to see a list of available commands.
+
+## Updating the release tool
+
+The following command will update the release tool to the latest version:
+
+```bash
+release-tool.phar self-update
+```
