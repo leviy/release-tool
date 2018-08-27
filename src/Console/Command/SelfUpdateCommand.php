@@ -23,13 +23,14 @@ final class SelfUpdateCommand extends Command
     {
         parent::__construct();
 
-        $this->updater = $updater;
-
-        /** @var GithubStrategy $strategy */
-        $strategy = $this->updater->getStrategy();
+        $strategy = new GithubStrategy();
         $strategy->setPackageName('leviy/release-tool');
         $strategy->setPharName('release-tool.phar');
         $strategy->setCurrentLocalVersion(Application::VERSION);
+
+        $updater->setStrategyObject($strategy);
+
+        $this->updater = $updater;
     }
 
     protected function configure(): void
