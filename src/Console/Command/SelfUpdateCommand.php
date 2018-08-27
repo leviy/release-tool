@@ -57,7 +57,7 @@ final class SelfUpdateCommand extends Command
         }
 
         if (!$this->updater->hasUpdate()) {
-            $output->writeln('<info>You are already using the latest version.</info>');
+            $output->writeln(sprintf('<info>You are already using version %s.</info>', Application::VERSION));
 
             return 0;
         }
