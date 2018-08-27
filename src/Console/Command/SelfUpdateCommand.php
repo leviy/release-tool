@@ -6,6 +6,7 @@ namespace Leviy\ReleaseTool\Console\Command;
 use Humbug\SelfUpdate\Strategy\GithubStrategy;
 use Humbug\SelfUpdate\Updater;
 use Leviy\ReleaseTool\Console\Application;
+use Leviy\ReleaseTool\Console\VersionHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -57,12 +58,22 @@ final class SelfUpdateCommand extends Command
         }
 
         if (!$this->updater->hasUpdate()) {
-            $output->writeln(sprintf('<info>You are already using version %s.</info>', Application::VERSION));
+            $output->writeln(
+                sprintf(
+                    '<info>You are already using version %s.</info>',
+                    VersionHelper::removeVersionPrefix(Application::VERSION)
+                )
+            );
 
             return 0;
         }
 
-        $output->writeln(sprintf('Updating to version <info>%s</info>.', $this->updater->getNewVersion()));
+        $output->writeln(
+            sprintf(
+                'Updating to version <info>%s</info>.',
+                VersionHelper::removeVersionPrefix($this->updater->getNewVersion())
+            )
+        );
         $output->writeln('Downloading...');
 
         $this->updater->update();
@@ -70,7 +81,7 @@ final class SelfUpdateCommand extends Command
         $output->writeln(
             sprintf(
                 'Use <info>release-tool self-update --rollback</info> to revert to version <comment>%s</comment>.',
-                $this->updater->getOldVersion()
+                VersionHelper::removeVersionPrefix($this->updater->getOldVersion())
             )
         );
 

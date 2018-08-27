@@ -26,7 +26,7 @@ final class Application extends SymfonyApplication
 
     public function __construct(ContainerBuilder $container)
     {
-        parent::__construct(self::NAME, self::VERSION);
+        parent::__construct(self::NAME, VersionHelper::removeVersionPrefix(self::VERSION));
 
         $this->buildContainer($container);
     }
