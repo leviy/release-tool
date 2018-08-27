@@ -1,11 +1,17 @@
-sources = bin/release src/
+sources = bin/release config/ src/
 
-.PHONY: all check static-analysis unit-tests integration-tests coding-standards
+.PHONY: all dist check static-analysis unit-tests integration-tests coding-standards
 
 all: vendor
 
-vendor: composer.json $(wildcard composer.lock)
+vendor: composer.json composer.lock
 	composer install
+
+build/release-tool.phar: $(sources) bin/box.phar composer.lock vendor
+	mkdir -p build
+	bin/box.phar compile
+
+dist: build/release-tool.phar
 
 check: static-analysis unit-tests integration-tests acceptance-tests system-tests coding-standards
 
@@ -30,10 +36,5 @@ coding-standards: vendor
 	vendor/bin/phpmd src/ text phpmd.xml
 
 bin/box.phar:
-	curl -LS https://github.com/humbug/box/releases/download/3.0.0-beta.3/box.phar -o bin/box.phar
+	curl -LS https://github.com/humbug/box/releases/download/3.0.0-RC.0/box.phar -o bin/box.phar
 	chmod a+x bin/box.phar
-
-dist: bin/box.phar
-	mkdir -p build
-	bin/box.phar compile
-
