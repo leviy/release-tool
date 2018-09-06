@@ -53,7 +53,8 @@ credentials:
 > Note: these usage instructions assume that you have downloaded the
 > `release-tool.phar` file to your project directory. If you have installed it
 > in a different location, update the commands accordingly. If you have
-> installed the tool as a Composer dependency, use `vendor/bin/release` instead.
+> installed the tool as a Composer dependency, use `vendor/bin/release-tool`
+instead.
 
 ### Releasing a new version
 

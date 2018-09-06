@@ -1,4 +1,4 @@
-sources = bin/release config/ src/
+sources = bin/release-tool config/ src/
 
 .PHONY: all dist check static-analysis unit-tests integration-tests coding-standards
 

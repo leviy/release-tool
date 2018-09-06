@@ -38,6 +38,6 @@
         }
     },
     "bin": [
-        "bin/release"
+        "bin/release-tool"
     ]
 }
