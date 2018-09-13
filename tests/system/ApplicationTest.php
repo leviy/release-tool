@@ -45,7 +45,7 @@ class ApplicationTest extends TestCase
     public function testThatTheApplicationReturnsTheCurrentVersion(): void
     {
         Git::execute('add README.md');
-        Git::execute('commit -m "Test commit"');
+        Git::execute('commit --no-gpg-sign -m "Test commit"');
         Git::execute('tag --annotate --message="Test tag" v1.2.5');
 
         $this->applicationTester->run(['current']);
