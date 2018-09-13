@@ -110,7 +110,7 @@ class ReleaseCommandTest extends TestCase
     private function commitFile(string $filename, string $commitMessage = 'Commit message'): void
     {
         Git::execute('add ' . $filename);
-        Git::execute('commit -m "' . $commitMessage . '"');
+        Git::execute('commit --no-gpg-sign -m "' . $commitMessage . '"');
     }
 
     private function removeGitDirectory(): void
