@@ -44,6 +44,14 @@ final class SelfUpdateCommand extends Command
                 'r',
                 InputOption::VALUE_NONE,
                 'Revert to an older version of the release tool'
+            )
+            ->setHelp(
+                <<<EOF
+The <info>%command.name%</info> command checks for newer versions of the release
+tool and if found, installs the latest.
+
+<info>%command.full_name%</info>
+EOF
             );
     }
 

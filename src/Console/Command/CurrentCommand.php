@@ -28,7 +28,14 @@ final class CurrentCommand extends Command
     {
         $this
             ->setName('current')
-            ->setDescription('Display the current version number');
+            ->setDescription('Displays the current version number')
+            ->setHelp(
+                <<<EOF
+The <info>%command.name%</info> command displays the version number of the current release.
+
+<info>%command.full_name%</info>
+EOF
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

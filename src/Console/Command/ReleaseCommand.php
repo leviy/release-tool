@@ -40,13 +40,32 @@ final class ReleaseCommand extends Command
     {
         $this
             ->setName('release')
-            ->setDescription('Release a new version')
+            ->setDescription('Releases a new version')
             ->addArgument('version', InputArgument::OPTIONAL, 'The version number for the new release')
             ->addOption(
                 'pre-release',
                 'p',
                 InputOption::VALUE_NONE,
-                'Generate a pre-release (alpha/beta/rc) version. Ignored when a version number is provided'
+                'Generate a pre-release (alpha/beta/rc) version. Ignored when <comment>version</comment> is provided'
+            )
+            ->addUsage('')
+            ->addUsage('--pre-release')
+            ->addUsage('1.0.0')
+            ->setHelp(
+                <<<EOF
+The <info>%command.name%</info> command releases a new version of a project. Based on interactive questions, it can
+determine the next version number for you:
+
+  <info>%command.full_name%</info>
+
+You can release a pre-release version by using the <comment>--pre-release</comment> option:
+
+  <info>%command.full_name% --pre-release</info>
+
+If you wish, you can skip the interactive questions and choose the version number yourself:
+
+  <info>%command.full_name% 1.0.0</info>
+EOF
             );
     }
 
