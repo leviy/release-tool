@@ -8,6 +8,7 @@ language: php
 php:
   - '7.1'
   - '7.2'
+  - '7.3'
 
 install:
   - mkdir $HOME/.release-tool && cp tests/system/auth.yml $HOME/.release-tool
