@@ -84,6 +84,7 @@ final class ReleaseCommand extends Command
         /** @var StyleInterface $style */
         $style = new SymfonyStyle($input, $output);
 
+        /** @var string $version */
         $version = $input->getArgument('version');
 
         if (!$this->releaseManager->isValidVersion($version)) {
