@@ -11,36 +11,54 @@ use PHPUnit\Framework\TestCase;
 
 class MarkdownFormatterTest extends TestCase
 {
-    public function testThatChangesAreFormattedAsAList(): void
+    public function testThatTheOutputContainsAHeaderForEveryVersion(): void
     {
         $formatter = new MarkdownFormatter([]);
 
-        $changelog = new Changelog(
-            [
-                'Title of first change',
-                'Title of second change',
-            ]
-        );
+        $changelog = new Changelog();
+        $changelog->addVersion('1.0.0', []);
+        $changelog->addVersion('1.1.0', []);
 
         $output = $formatter->format($changelog);
 
-        $this->assertContains('* Title of first change', $output);
-        $this->assertContains('* Title of second change', $output);
+        $this->assertContains('# Changelog for 1.0.0', $output);
+        $this->assertContains('# Changelog for 1.1.0', $output);
     }
 
-    public function testThatTheOutputContainsAHeader(): void
+    public function testThatTheOutputContainsAListItemForEveryChange(): void
     {
         $formatter = new MarkdownFormatter([]);
 
-        $changelog = new Changelog(
-            [
-                'Some change',
-            ]
-        );
+        $changelog = new Changelog();
+        $changelog->addVersion('1.0.0', ['First change', 'Second change']);
 
         $output = $formatter->format($changelog);
 
-        $this->assertContains('# Changelog', $output);
+        $this->assertContains('* First change', $output);
+        $this->assertContains('* Second change', $output);
+    }
+
+    public function testThatVersionsAreShownInReversedOrder(): void
+    {
+        $formatter = new MarkdownFormatter([]);
+
+        $changelog = new Changelog();
+        $changelog->addVersion('1.0.0', ['Some change']);
+        $changelog->addVersion('1.1.0', ['Other change']);
+
+        $output = $formatter->format($changelog);
+
+        $expected = <<<EXPECTED
+# Changelog for 1.1.0
+
+* Other change
+
+# Changelog for 1.0.0
+
+* Some change
+EXPECTED;
+
+        $this->assertContains($expected, $output);
     }
 
     public function testThatFiltersAreApplied(): void
@@ -50,11 +68,8 @@ class MarkdownFormatterTest extends TestCase
 
         $formatter = new MarkdownFormatter([$filter]);
 
-        $changelog = new Changelog(
-            [
-                'Some change',
-            ]
-        );
+        $changelog = new Changelog();
+        $changelog->addVersion('1.0.0', ['Some change']);
 
         $this->assertContains('Filtered change line', $formatter->format($changelog));
         $this->assertNotContains('Some change', $formatter->format($changelog));

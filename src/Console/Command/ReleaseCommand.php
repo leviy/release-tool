@@ -80,7 +80,7 @@ EOF
             $style->newLine();
 
             $style->text('A new release will introduce the following changes:');
-            $style->listing($this->changelogGenerator->getChangelog()->getChanges());
+            $style->listing($this->changelogGenerator->getChangelog()->getUnreleasedChanges());
 
             $informationCollector = new InteractiveInformationCollector($style);
 

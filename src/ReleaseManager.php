@@ -57,8 +57,6 @@ class ReleaseManager
 
     public function release(string $versionString, InformationCollector $informationCollector): void
     {
-        $changelog = $this->changelogGenerator->getChangelog();
-
         $this->versionControlSystem->createVersion($versionString);
 
         $question = 'A VCS tag has been created for version ' . $versionString . '. ';
@@ -71,6 +69,8 @@ class ReleaseManager
         $this->versionControlSystem->pushVersion($versionString);
 
         $version = $this->versioningScheme->getVersion($versionString);
+
+        $changelog = $this->changelogGenerator->getChangelog();
 
         array_walk($this->actions, function (ReleaseAction $releaseAction) use ($version, $changelog): void {
             $releaseAction->execute($version, $changelog);

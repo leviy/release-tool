@@ -70,6 +70,17 @@ class GitTest extends TestCase
         $git->getLastVersion();
     }
 
+    public function testThatMergedVersionsAreReturned(): void
+    {
+        $this->createTag('v1.0.0');
+        $this->createTag('v1.0.1');
+        $this->createTag('1.0.2');
+
+        $git = new Git('v');
+
+        $this->assertSame(['1.0.0', '1.0.1'], $git->listVersions());
+    }
+
     public function testThatANewVersionIsTagged(): void
     {
         $git = new Git('v');
@@ -79,7 +90,7 @@ class GitTest extends TestCase
         $this->assertContains('v1.2.0', $this->getTags());
     }
 
-    public function testThatCommitsSinceAVersionAreReturned(): void
+    public function testThatCommitsSinceTheLastVersionAreReturned(): void
     {
         $this->createTag('1.0.0', 'HEAD');
         $this->commitFile('phpunit.xml', 'New commit message');
@@ -111,6 +122,21 @@ class GitTest extends TestCase
 
         $this->assertCount(1, $commits);
         $this->assertSame('Other commit message', $commits[0]->title);
+    }
+
+    public function testThatCommitsLeadingToAVersionAreReturned(): void
+    {
+        $this->createTag('v1.0.0');
+        $this->commitFile('phpunit.xml', 'Add phpunit.xml');
+        $this->commitFile('composer.json', 'Add composer.json');
+        $this->createTag('v1.0.1');
+
+        $git = new Git('v');
+        $commits = $git->getCommitsForVersion('1.0.1');
+
+        $this->assertCount(2, $commits);
+        $this->assertSame('Add composer.json', $commits[0]->title);
+        $this->assertSame('Add phpunit.xml', $commits[1]->title);
     }
 
     private function commitFile(string $filename, string $commitMessage = 'Commit message'): void

@@ -6,9 +6,9 @@ namespace Leviy\ReleaseTool\Changelog\Formatter;
 use Assert\Assertion;
 use Leviy\ReleaseTool\Changelog\Changelog;
 use Leviy\ReleaseTool\Changelog\Formatter\Filter\Filter;
-use function array_map;
-use function array_merge;
+use function array_reverse;
 use function implode;
+use function sprintf;
 use const PHP_EOL;
 
 final class MarkdownFormatter implements Formatter
@@ -30,22 +30,21 @@ final class MarkdownFormatter implements Formatter
 
     public function format(Changelog $changelog): string
     {
-        $changes = array_map(
-            function (string $line): string {
-                $line = $this->applyFilters($line);
+        $lines = [];
 
-                return '* ' . $line;
-            },
-            $changelog->getChanges()
-        );
+        $versions = $changelog->getVersions();
+        $versions = array_reverse($versions);
 
-        $lines = array_merge(
-            [
-                '# Changelog',
-                '',
-            ],
-            $changes
-        );
+        foreach ($versions as $version) {
+            $lines[] = sprintf('# Changelog for %s', $version);
+            $lines[] = '';
+
+            foreach ($changelog->getChangesForVersion($version) as $change) {
+                $lines[] = '* ' . $this->applyFilters($change);
+            }
+
+            $lines[] = '';
+        }
 
         return implode(PHP_EOL, $lines);
     }

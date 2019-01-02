@@ -45,7 +45,7 @@ class ReleaseCommandTest extends TestCase
 
         $this->removeGitDirectory();
         Git::execute('init');
-        $this->commitFile('README.md');
+        $this->commitFile('README.md', 'Merge pull request #3 from branch');
     }
 
     protected function tearDown(): void

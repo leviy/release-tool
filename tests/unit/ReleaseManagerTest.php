@@ -54,7 +54,7 @@ class ReleaseManagerTest extends TestCase
         $this->releaseAction = Mockery::spy(ReleaseAction::class);
         $this->informationCollector = Mockery::mock(InformationCollector::class);
 
-        $this->changelogGenerator->shouldReceive('getChangelog')->andReturn(new Changelog([]));
+        $this->changelogGenerator->shouldReceive('getChangelog')->andReturn(new Changelog());
     }
 
     public function testThatInstantiationThrowsAnErrorWhenActionIsNotReleaseAction(): void

@@ -25,17 +25,36 @@ final class PullRequestChangelogGenerator implements ChangelogGenerator
 
     public function getChangelog(): Changelog
     {
-        $commits = $this->versionControlSystem->getCommitsSinceLastVersion(self::PULL_REQUEST_PATTERN);
+        $changelog = new Changelog();
 
-        return new Changelog(
-            array_map(
-                function (Commit $commit): string {
-                    preg_match('/' . self::PULL_REQUEST_PATTERN . '/', $commit->title, $matches);
+        $versions = $this->versionControlSystem->listVersions();
 
-                    return sprintf('%s (pull request #%d)', $commit->body, $matches[1]);
-                },
+        foreach ($versions as $version) {
+            $commits = $this->versionControlSystem->getCommitsForVersion($version, self::PULL_REQUEST_PATTERN);
+
+            $changes = array_map(
+                [$this, 'createChangeFromCommit'],
                 $commits
-            )
-        );
+            );
+
+            $changelog->addVersion($version, $changes);
+        }
+
+        $unreleasedCommits = $this->versionControlSystem->getCommitsSinceLastVersion(self::PULL_REQUEST_PATTERN);
+        $unreleasedChanges = array_map([$this, 'createChangeFromCommit'], $unreleasedCommits);
+
+        $changelog->addUnreleasedChanges($unreleasedChanges);
+
+        return $changelog;
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod) Method is used as callable in getChangelog()
+     */
+    private function createChangeFromCommit(Commit $commit): string
+    {
+        preg_match('/' . self::PULL_REQUEST_PATTERN . '/', $commit->title, $matches);
+
+        return sprintf('%s (pull request #%d)', $commit->body, $matches[1]);
     }
 }

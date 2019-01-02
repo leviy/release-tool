@@ -52,17 +52,7 @@ final class Git implements VersionControlSystem
 
     public function getLastVersion(): string
     {
-        try {
-            $tag = self::execute(
-                'describe',
-                [
-                    '--abbrev=0',
-                    sprintf('--match "%s%s"', $this->tagPrefix, self::VERSION_GLOB),
-                ]
-            )[0];
-        } catch (GitException $exception) {
-            throw new ReleaseNotFoundException('No release could be found', 0, $exception);
-        }
+        $tag = $this->describe();
 
         return $this->getVersionFromTag($tag);
     }
@@ -96,12 +86,64 @@ final class Git implements VersionControlSystem
     public function getCommitsSinceLastVersion(?string $pattern = null): array
     {
         try {
-            $arguments = [
-                $this->getTagForVersion($this->getLastVersion()) . '..HEAD',
-            ];
+            $range = $this->getTagForVersion($this->getLastVersion()) . '..HEAD';
         } catch (ReleaseNotFoundException $exception) {
-            $arguments = [];
+            $range = 'HEAD';
         }
+
+        return $this->getCommitsInRange($range, $pattern);
+    }
+
+    /**
+     *
+     * @return Commit[]
+     */
+    public function getCommitsForVersion(string $version, ?string $pattern = null): array
+    {
+        $revisionRange = $this->getRevisionRangeForVersion($version);
+
+        return $this->getCommitsInRange($revisionRange, $pattern);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function listVersions(): array
+    {
+        $tags = self::execute(
+            'tag',
+            [
+                '--list',
+                '--sort=taggerdate',
+                sprintf("'%s*'", $this->tagPrefix),
+                '--merged',
+            ]
+        );
+
+        return array_map(
+            function (string $tag): string {
+                return $this->getVersionFromTag($tag);
+            },
+            $tags
+        );
+    }
+
+    public function getTagForVersion(string $version): string
+    {
+        return $this->tagPrefix . $version;
+    }
+
+    private function getVersionFromTag(string $tag): string
+    {
+        return substr($tag, strlen($this->tagPrefix));
+    }
+
+    /**
+     * @return Commit[]
+     */
+    private function getCommitsInRange(string $revisionRange, ?string $pattern = null): array
+    {
+        $arguments[] = $revisionRange;
 
         $arguments[] = '--format="%s%x1F%b%x1E"';
 
@@ -128,13 +170,38 @@ final class Git implements VersionControlSystem
         return $commits;
     }
 
-    public function getTagForVersion(string $version): string
+    /**
+     * Returns a revision range that describes the changes introduced in a
+     * version.
+     *
+     * For example, if there is a tag v1.0.1 and a tag v1.0.0, this will return
+     * v1.0.0..v1.0.1.
+     */
+    private function getRevisionRangeForVersion(string $version): string
     {
-        return $this->tagPrefix . $version;
+        $tag = $this->getTagForVersion($version);
+
+        try {
+            return sprintf('%s..%s', $this->describe($tag . '^'), $tag);
+        } catch (ReleaseNotFoundException $exception) {
+            return $tag;
+        }
     }
 
-    private function getVersionFromTag(string $tag): string
+    private function describe(string $object = 'HEAD'): string
     {
-        return substr($tag, strlen($this->tagPrefix));
+        try {
+            return self::execute(
+                'describe',
+                [
+                    '--abbrev=0',
+                    '--tags',
+                    sprintf('--match "%s%s"', $this->tagPrefix, self::VERSION_GLOB),
+                    $object,
+                ]
+            )[0];
+        } catch (GitException $exception) {
+            throw new ReleaseNotFoundException('No release could be found', 0, $exception);
+        }
     }
 }
