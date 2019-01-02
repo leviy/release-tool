@@ -1,6 +1,6 @@
 sources = bin/release config/ src/
 
-.PHONY: all dist check static-analysis unit-tests integration-tests coding-standards security-tests
+.PHONY: all dist check test static-analysis unit-tests integration-tests coding-standards security-tests
 
 all: vendor
 
@@ -13,7 +13,7 @@ build/release-tool.phar: $(sources) bin/box.phar composer.lock vendor
 
 dist: build/release-tool.phar
 
-check: static-analysis unit-tests integration-tests acceptance-tests system-tests coding-standards security-tests
+check test: static-analysis unit-tests integration-tests acceptance-tests system-tests coding-standards security-tests
 
 static-analysis: vendor
 	vendor/bin/parallel-lint $(sources)
