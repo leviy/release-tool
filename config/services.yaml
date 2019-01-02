@@ -26,6 +26,11 @@ services:
   changelog_formatter.markdown:
     class: Leviy\ReleaseTool\Changelog\Formatter\MarkdownFormatter
     arguments:
+      - ['@changelog_formatter_filter.markdown.github_pull_request_link']
+
+  changelog_formatter_filter.markdown.github_pull_request_link:
+    class: Leviy\ReleaseTool\Changelog\Formatter\Filter\GitHubPullRequestUrlFilter
+    arguments:
       - '%github.owner%/%github.repo%'
 
   phar_updater:

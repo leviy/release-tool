@@ -3,45 +3,38 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Changelog\Formatter;
 
+use Assert\Assertion;
 use Leviy\ReleaseTool\Changelog\Changelog;
+use Leviy\ReleaseTool\Changelog\Formatter\Filter\Filter;
 use function array_map;
 use function array_merge;
 use function implode;
-use function preg_replace;
-use function sprintf;
 use const PHP_EOL;
 
 final class MarkdownFormatter implements Formatter
 {
-    private const PULL_REQUEST_URL = 'https://github.com/%s/pull/$1';
+    /**
+     * @var Filter[]
+     */
+    private $filters;
 
     /**
-     * @var string
+     * @param Filter[] $filters
      */
-    private $pullRequestUrl;
-
-    /**
-     * @var string
-     */
-    private $issueUrl;
-
-    /**
-     * @var string
-     */
-    private $issuePattern;
-
-    public function __construct(string $repositorySlug, string $issuePattern = '', string $issueUrl = '')
+    public function __construct(array $filters)
     {
-        $this->pullRequestUrl = sprintf(self::PULL_REQUEST_URL, $repositorySlug);
-        $this->issueUrl = $issueUrl;
-        $this->issuePattern = $issuePattern;
+        Assertion::allIsInstanceOf($filters, Filter::class);
+
+        $this->filters = $filters;
     }
 
     public function format(Changelog $changelog): string
     {
         $changes = array_map(
             function (string $line): string {
-                return $this->formatLine($line);
+                $line = $this->applyFilters($line);
+
+                return '* ' . $line;
             },
             $changelog->getChanges()
         );
@@ -57,23 +50,11 @@ final class MarkdownFormatter implements Formatter
         return implode(PHP_EOL, $lines);
     }
 
-    private function formatLine(string $line): string
+    private function applyFilters(string $line): string
     {
-        $line = preg_replace(
-            '/pull request #(\d+)/',
-            'pull request [#$1](' . $this->pullRequestUrl . ')',
-            $line
-        );
-
-        if (!empty($this->issuePattern) && !empty($this->issueUrl)) {
-            $line = preg_replace(
-                $this->issuePattern,
-                '[$1](' . $this->issueUrl . ')',
-                $line
-            );
+        foreach ($this->filters as $filter) {
+            $line = $filter->filter($line);
         }
-
-        $line = '* ' . $line;
 
         return $line;
     }
