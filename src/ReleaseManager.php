@@ -34,10 +34,7 @@ class ReleaseManager
     private $actions;
 
     /**
-     * @param VersionControlSystem $versionControlSystem
-     * @param VersioningScheme     $versioningScheme
-     * @param ChangelogGenerator   $changelogGenerator
-     * @param ReleaseAction[]      $actions
+     * @param ReleaseAction[] $actions
      */
     public function __construct(
         VersionControlSystem $versionControlSystem,
