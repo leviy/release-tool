@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Tests\Unit\Changelog\Formatter;
 
+use Leviy\ReleaseTool\Changelog\Changelog;
 use Leviy\ReleaseTool\Changelog\Formatter\MarkdownFormatter;
 use PHPUnit\Framework\TestCase;
 
@@ -12,53 +13,65 @@ class MarkdownFormatterTest extends TestCase
     {
         $formatter = new MarkdownFormatter('');
 
-        $changes = $formatter->formatChanges(
+        $changelog = new Changelog(
             [
                 'Title of first change',
                 'Title of second change',
             ]
         );
 
-        $this->assertContains('* Title of first change', $changes);
-        $this->assertContains('* Title of second change', $changes);
+        $output = $formatter->format($changelog);
+
+        $this->assertContains('* Title of first change', $output);
+        $this->assertContains('* Title of second change', $output);
     }
 
     public function testThatPullRequestNumbersLinkToGithub(): void
     {
         $formatter = new MarkdownFormatter('org/repo');
 
-        $changes = $formatter->formatChanges(
+        $changelog = new Changelog(
             [
                 'Some change (pull request #3)',
                 'Other change (pull request #457)',
             ]
         );
 
-        $this->assertContains('* Some change (pull request [#3](https://github.com/org/repo/pull/3))', $changes);
-        $this->assertContains('* Other change (pull request [#457](https://github.com/org/repo/pull/457))', $changes);
+        $output = $formatter->format($changelog);
+
+        $this->assertContains('* Some change (pull request [#3](https://github.com/org/repo/pull/3))', $output);
+        $this->assertContains('* Other change (pull request [#457](https://github.com/org/repo/pull/457))', $output);
     }
 
     public function testThatIssueNumbersLinkToIssueTracker(): void
     {
         $formatter = new MarkdownFormatter('org/repo', '/(RT-[0-9]+)/', 'https://issuetracker.com/$1');
 
-        $changes = $formatter->formatChanges(
+        $changelog = new Changelog(
             [
                 'RT-123: Some change',
                 'Other change',
             ]
         );
 
-        $this->assertContains('* [RT-123](https://issuetracker.com/RT-123): Some change', $changes);
-        $this->assertContains('* Other change', $changes);
+        $output = $formatter->format($changelog);
+
+        $this->assertContains('* [RT-123](https://issuetracker.com/RT-123): Some change', $output);
+        $this->assertContains('* Other change', $output);
     }
 
     public function testThatTheOutputContainsAHeader(): void
     {
         $formatter = new MarkdownFormatter('');
 
-        $changes = $formatter->formatChanges(['Some change']);
+        $changelog = new Changelog(
+            [
+                'Some change',
+            ]
+        );
 
-        $this->assertContains('# Changelog', $changes);
+        $output = $formatter->format($changelog);
+
+        $this->assertContains('# Changelog', $output);
     }
 }

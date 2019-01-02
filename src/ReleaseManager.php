@@ -57,7 +57,7 @@ class ReleaseManager
 
     public function release(string $versionString, InformationCollector $informationCollector): void
     {
-        $changeset = $this->changelogGenerator->getChanges();
+        $changelog = $this->changelogGenerator->getChangelog();
 
         $this->versionControlSystem->createVersion($versionString);
 
@@ -72,8 +72,8 @@ class ReleaseManager
 
         $version = $this->versioningScheme->getVersion($versionString);
 
-        array_walk($this->actions, function (ReleaseAction $releaseAction) use ($version, $changeset): void {
-            $releaseAction->execute($version, $changeset);
+        array_walk($this->actions, function (ReleaseAction $releaseAction) use ($version, $changelog): void {
+            $releaseAction->execute($version, $changelog);
         });
     }
 

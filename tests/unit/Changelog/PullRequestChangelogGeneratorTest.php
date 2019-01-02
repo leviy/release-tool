@@ -19,8 +19,8 @@ class PullRequestChangelogGeneratorTest extends TestCase
         $vcs->shouldReceive('getCommitsSinceLastVersion')
             ->andReturn([new Commit('Merge pull request #3 from branchname', 'Lorem ipsum')]);
 
-        $changes = $generator->getChanges();
+        $changelog = $generator->getChangelog();
 
-        $this->assertSame('Lorem ipsum (pull request #3)', $changes[0]);
+        $this->assertSame('Lorem ipsum (pull request #3)', $changelog->getChanges()[0]);
     }
 }

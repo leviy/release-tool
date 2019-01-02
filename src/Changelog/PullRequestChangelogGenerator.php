@@ -23,20 +23,19 @@ final class PullRequestChangelogGenerator implements ChangelogGenerator
         $this->versionControlSystem = $versionControlSystem;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getChanges(): array
+    public function getChangelog(): Changelog
     {
         $commits = $this->versionControlSystem->getCommitsSinceLastVersion(self::PULL_REQUEST_PATTERN);
 
-        return array_map(
-            function (Commit $commit): string {
-                preg_match('/' . self::PULL_REQUEST_PATTERN . '/', $commit->title, $matches);
+        return new Changelog(
+            array_map(
+                function (Commit $commit): string {
+                    preg_match('/' . self::PULL_REQUEST_PATTERN . '/', $commit->title, $matches);
 
-                return sprintf('%s (pull request #%d)', $commit->body, $matches[1]);
-            },
-            $commits
+                    return sprintf('%s (pull request #%d)', $commit->body, $matches[1]);
+                },
+                $commits
+            )
         );
     }
 }

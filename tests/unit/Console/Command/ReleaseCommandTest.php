@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Tests\Unit\Console\Command;
 
 use InvalidArgumentException;
+use Leviy\ReleaseTool\Changelog\Changelog;
 use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Console\Command\ReleaseCommand;
 use Leviy\ReleaseTool\ReleaseManager;
@@ -51,7 +52,7 @@ class ReleaseCommandTest extends TestCase
     public function testThatItFailsIfTheProvidedVersionIsInvalid(): void
     {
         $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
-        $this->changelogGenerator->shouldReceive('getChanges');
+        $this->changelogGenerator->shouldReceive('getChangelog');
         $this->releaseManager->shouldReceive('isValidVersion')->andReturnFalse();
 
         $this->expectException(InvalidArgumentException::class);
@@ -65,7 +66,7 @@ class ReleaseCommandTest extends TestCase
     public function testThatItReleasesANewVersion(): void
     {
         $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
-        $this->changelogGenerator->shouldReceive('getChanges');
+        $this->changelogGenerator->shouldReceive('getChangelog');
         $this->releaseManager->shouldReceive('isValidVersion')->andReturnTrue();
 
         $commandTester = new CommandTester($command);
@@ -79,7 +80,7 @@ class ReleaseCommandTest extends TestCase
     public function testThatItAbortsTheReleaseOnNegativeConfirmation(): void
     {
         $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
-        $this->changelogGenerator->shouldReceive('getChanges');
+        $this->changelogGenerator->shouldReceive('getChangelog');
         $this->releaseManager->shouldReceive('isValidVersion')->andReturnTrue();
 
         $commandTester = new CommandTester($command);
@@ -93,7 +94,7 @@ class ReleaseCommandTest extends TestCase
     public function testThatItUsesTheReleaseManagerToDetermineTheNextVersion(): void
     {
         $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
-        $this->changelogGenerator->shouldReceive('getChanges');
+        $this->changelogGenerator->shouldReceive('getChangelog')->andReturn(new Changelog([]));
         $this->releaseManager->shouldReceive('isValidVersion')->andReturnTrue();
 
         $this->releaseManager->shouldReceive('determineNextVersion')->andReturn('2.3.0');

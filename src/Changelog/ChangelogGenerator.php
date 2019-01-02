@@ -5,8 +5,5 @@ namespace Leviy\ReleaseTool\Changelog;
 
 interface ChangelogGenerator
 {
-    /**
-     * @return string[]
-     */
-    public function getChanges(): array;
+    public function getChangelog(): Changelog;
 }

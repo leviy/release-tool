@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\ReleaseAction;
 
+use Leviy\ReleaseTool\Changelog\Changelog;
 use Leviy\ReleaseTool\Versioning\Version;
 
 interface ReleaseAction
 {
-    /**
-     * @param string[] $changeset
-     */
-    public function execute(Version $version, array $changeset): void;
+    public function execute(Version $version, Changelog $changelog): void;
 }

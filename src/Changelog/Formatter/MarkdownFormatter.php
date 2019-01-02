@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Changelog\Formatter;
 
+use Leviy\ReleaseTool\Changelog\Changelog;
 use function array_map;
 use function array_merge;
+use function implode;
 use function preg_replace;
 use function sprintf;
+use const PHP_EOL;
 
 final class MarkdownFormatter implements Formatter
 {
@@ -34,21 +37,16 @@ final class MarkdownFormatter implements Formatter
         $this->issuePattern = $issuePattern;
     }
 
-    /**
-     * @param string[] $changes
-     *
-     * @return string[]
-     */
-    public function formatChanges(array $changes): array
+    public function format(Changelog $changelog): string
     {
         $changes = array_map(
             function (string $line): string {
                 return $this->formatLine($line);
             },
-            $changes
+            $changelog->getChanges()
         );
 
-        $changes = array_merge(
+        $lines = array_merge(
             [
                 '# Changelog',
                 '',
@@ -56,7 +54,7 @@ final class MarkdownFormatter implements Formatter
             $changes
         );
 
-        return $changes;
+        return implode(PHP_EOL, $lines);
     }
 
     private function formatLine(string $line): string
