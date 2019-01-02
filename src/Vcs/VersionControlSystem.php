@@ -12,8 +12,6 @@ interface VersionControlSystem
     public function pushVersion(string $version): void;
 
     /**
-     * @param null|string $pattern
-     *
      * @return Commit[]
      */
     public function getCommitsSinceLastVersion(?string $pattern = null): array;

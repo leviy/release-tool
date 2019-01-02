@@ -11,9 +11,6 @@ class GitHubRepositoryParserTest extends TestCase
 {
     /**
      * @dataProvider ownerProvider
-     *
-     * @param string $url
-     * @param string $owner
      */
     public function testThatOwnerIsReturned(string $url, string $owner): void
     {
@@ -36,9 +33,6 @@ class GitHubRepositoryParserTest extends TestCase
 
     /**
      * @dataProvider repositoryNameProvider
-     *
-     * @param string $url
-     * @param string $repository
      */
     public function testThatRepositoryNameIsReturned(string $url, string $repository): void
     {

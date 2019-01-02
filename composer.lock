@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9fe27deb6b643e251cf65d71a5eb5b52",
+    "content-hash": "60071793e4cfe2188ff021255ccf0676",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -1640,16 +1640,16 @@
         },
         {
             "name": "leviy/coding-standard",
-            "version": "v3.4.4",
+            "version": "v3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/leviy/php-coding-standard.git",
-                "reference": "209bde5a1c0127e0506119485b866b129b92c8e6"
+                "reference": "385a80213f867c1ec3b25301237d55201bb64adc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/leviy/php-coding-standard/zipball/209bde5a1c0127e0506119485b866b129b92c8e6",
-                "reference": "209bde5a1c0127e0506119485b866b129b92c8e6",
+                "url": "https://api.github.com/repos/leviy/php-coding-standard/zipball/385a80213f867c1ec3b25301237d55201bb64adc",
+                "reference": "385a80213f867c1ec3b25301237d55201bb64adc",
                 "shasum": ""
             },
             "require": {
@@ -1657,7 +1657,7 @@
                 "escapestudios/symfony2-coding-standard": "^3.0",
                 "php": "^7.1",
                 "phpmd/phpmd": "^2.6",
-                "slevomat/coding-standard": "^4.5",
+                "slevomat/coding-standard": "^4.6",
                 "squizlabs/php_codesniffer": "^3.0"
             },
             "require-dev": {
@@ -1680,7 +1680,7 @@
                 }
             ],
             "description": "LEVIY Coding Standard",
-            "time": "2018-08-01T09:22:48+00:00"
+            "time": "2018-11-09T14:44:14+00:00"
         },
         {
             "name": "mockery/mockery",

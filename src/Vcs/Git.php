@@ -31,7 +31,6 @@ final class Git implements VersionControlSystem
     }
 
     /**
-     * @param string   $command
      * @param string[] $arguments
      *
      * @return string[]
@@ -92,8 +91,6 @@ final class Git implements VersionControlSystem
     }
 
     /**
-     * @param null|string $pattern
-     *
      * @return Commit[]
      */
     public function getCommitsSinceLastVersion(?string $pattern = null): array

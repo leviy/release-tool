@@ -20,8 +20,6 @@ class GitHubRepositoryParser
     }
 
     /**
-     * @param string $url
-     *
      * @return string[]
      */
     private function parseUrl(string $url): array
