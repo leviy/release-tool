@@ -1,6 +1,6 @@
 sources = bin/release config/ src/
 
-.PHONY: all dist check static-analysis unit-tests integration-tests coding-standards
+.PHONY: all dist check test static-analysis unit-tests integration-tests coding-standards security-tests
 
 all: vendor
 
@@ -13,7 +13,7 @@ build/release-tool.phar: $(sources) bin/box.phar composer.lock vendor
 
 dist: build/release-tool.phar
 
-check: static-analysis unit-tests integration-tests acceptance-tests system-tests coding-standards
+check test: static-analysis unit-tests integration-tests acceptance-tests system-tests coding-standards security-tests
 
 static-analysis: vendor
 	vendor/bin/parallel-lint $(sources)
@@ -34,6 +34,9 @@ system-tests: vendor
 coding-standards: vendor
 	vendor/bin/phpcs -p --colors
 	vendor/bin/phpmd src/ text phpmd.xml
+
+security-tests: vendor
+	vendor/bin/security-checker security:check
 
 bin/box.phar:
 	curl -LS https://github.com/humbug/box/releases/download/3.0.0-RC.0/box.phar -o bin/box.phar
