@@ -12,7 +12,6 @@ services:
     arguments:
       - '@vcs.git'
       - '@versioning_scheme.semantic'
-      - '@changelog_generator.pull_request'
       - ['@github.release_action.release']
 
   versioning_scheme.semantic:
@@ -32,9 +31,6 @@ services:
     class: Leviy\ReleaseTool\Changelog\Formatter\Filter\GitHubPullRequestUrlFilter
     arguments:
       - '%github.owner%/%github.repo%'
-
-  changelog_filter.last_release:
-    class: Leviy\ReleaseTool\Changelog\Filter\LastReleaseFilter
 
   phar_updater:
     class: Humbug\SelfUpdate\Updater

@@ -22,11 +22,4 @@ interface VersionControlSystem
     public function getCommitsForVersion(string $version, ?string $pattern = null): array;
 
     public function getTagForVersion(string $version): string;
-
-    /**
-     * Returns an chronologically ordered list of versions (starting with the oldest one)
-     *
-     * @return string[]
-     */
-    public function listVersions(): array;
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool;
 
 use Assert\Assertion;
-use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
 use Leviy\ReleaseTool\ReleaseAction\ReleaseAction;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
@@ -24,11 +23,6 @@ class ReleaseManager
     private $versioningScheme;
 
     /**
-     * @var ChangelogGenerator
-     */
-    private $changelogGenerator;
-
-    /**
      * @var ReleaseAction[]
      */
     private $actions;
@@ -39,7 +33,6 @@ class ReleaseManager
     public function __construct(
         VersionControlSystem $versionControlSystem,
         VersioningScheme $versioningScheme,
-        ChangelogGenerator $changelogGenerator,
         array $actions
     ) {
         Assertion::allIsInstanceOf($actions, ReleaseAction::class);
@@ -47,7 +40,6 @@ class ReleaseManager
         $this->versionControlSystem = $versionControlSystem;
         $this->versioningScheme = $versioningScheme;
         $this->actions = $actions;
-        $this->changelogGenerator = $changelogGenerator;
     }
 
     public function getCurrentVersion(): string
@@ -70,11 +62,12 @@ class ReleaseManager
 
         $version = $this->versioningScheme->getVersion($versionString);
 
-        $changelog = $this->changelogGenerator->getChangelog();
-
-        array_walk($this->actions, function (ReleaseAction $releaseAction) use ($version, $changelog): void {
-            $releaseAction->execute($version, $changelog);
-        });
+        array_walk(
+            $this->actions,
+            function (ReleaseAction $releaseAction) use ($version): void {
+                $releaseAction->execute($version);
+            }
+        );
     }
 
     public function determineNextVersion(InformationCollector $informationCollector): string

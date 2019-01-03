@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\ReleaseAction;
 
-use Leviy\ReleaseTool\Changelog\Changelog;
-use Leviy\ReleaseTool\Changelog\Filter\Filter;
+use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Changelog\Formatter\Formatter;
 use Leviy\ReleaseTool\GitHub\GitHubClient;
 use Leviy\ReleaseTool\Vcs\Git;
@@ -13,9 +12,9 @@ use Leviy\ReleaseTool\Versioning\Version;
 final class GitHubReleaseAction implements ReleaseAction
 {
     /**
-     * @var Filter
+     * @var ChangelogGenerator
      */
-    private $changelogFilter;
+    private $changelogGenerator;
 
     /**
      * @var Formatter
@@ -32,17 +31,21 @@ final class GitHubReleaseAction implements ReleaseAction
      */
     private $client;
 
-    public function __construct(Filter $changelogFilter, Formatter $changelogFormatter, Git $git, GitHubClient $client)
-    {
-        $this->changelogFilter = $changelogFilter;
+    public function __construct(
+        ChangelogGenerator $changelogGenerator,
+        Formatter $changelogFormatter,
+        Git $git,
+        GitHubClient $client
+    ) {
+        $this->changelogGenerator = $changelogGenerator;
         $this->changelogFormatter = $changelogFormatter;
         $this->git = $git;
         $this->client = $client;
     }
 
-    public function execute(Version $version, Changelog $changelog): void
+    public function execute(Version $version): void
     {
-        $changelog = $this->changelogFilter->filter($changelog);
+        $changelog = $this->changelogGenerator->getChangelogForVersion($version);
 
         $body = $this->changelogFormatter->format($changelog);
 

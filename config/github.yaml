@@ -21,7 +21,7 @@ services:
   github.release_action.release:
     class: Leviy\ReleaseTool\ReleaseAction\GitHubReleaseAction
     arguments:
-      - '@changelog_filter.last_release'
+      - '@changelog_generator.pull_request'
       - '@changelog_formatter.markdown'
       - '@vcs.git'
       - '@github.client'

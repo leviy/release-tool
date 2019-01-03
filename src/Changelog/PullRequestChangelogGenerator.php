@@ -5,6 +5,7 @@ namespace Leviy\ReleaseTool\Changelog;
 
 use Leviy\ReleaseTool\Vcs\Commit;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
+use Leviy\ReleaseTool\Versioning\Version;
 use function array_map;
 use function preg_match;
 use function sprintf;
@@ -23,27 +24,31 @@ final class PullRequestChangelogGenerator implements ChangelogGenerator
         $this->versionControlSystem = $versionControlSystem;
     }
 
-    public function getChangelog(): Changelog
+    public function getUnreleasedChangelog(): Changelog
     {
-        $changelog = new Changelog();
-
-        $versions = $this->versionControlSystem->listVersions();
-
-        foreach ($versions as $version) {
-            $commits = $this->versionControlSystem->getCommitsForVersion($version, self::PULL_REQUEST_PATTERN);
-
-            $changes = array_map(
-                [$this, 'createChangeFromCommit'],
-                $commits
-            );
-
-            $changelog->addVersion($version, $changes);
-        }
-
         $unreleasedCommits = $this->versionControlSystem->getCommitsSinceLastVersion(self::PULL_REQUEST_PATTERN);
         $unreleasedChanges = array_map([$this, 'createChangeFromCommit'], $unreleasedCommits);
 
+        $changelog = new Changelog();
         $changelog->addUnreleasedChanges($unreleasedChanges);
+
+        return $changelog;
+    }
+
+    public function getChangelogForVersion(Version $version): Changelog
+    {
+        $commits = $this->versionControlSystem->getCommitsForVersion(
+            $version->getVersion(),
+            self::PULL_REQUEST_PATTERN
+        );
+
+        $changes = array_map(
+            [$this, 'createChangeFromCommit'],
+            $commits
+        );
+
+        $changelog = new Changelog();
+        $changelog->addVersion($version->getVersion(), $changes);
 
         return $changelog;
     }

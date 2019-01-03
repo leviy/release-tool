@@ -70,17 +70,6 @@ class GitTest extends TestCase
         $git->getLastVersion();
     }
 
-    public function testThatMergedVersionsAreReturned(): void
-    {
-        $this->createTag('v1.0.0');
-        $this->createTag('v1.0.1');
-        $this->createTag('1.0.2');
-
-        $git = new Git('v');
-
-        $this->assertSame(['1.0.0', '1.0.1'], $git->listVersions());
-    }
-
     public function testThatANewVersionIsTagged(): void
     {
         $git = new Git('v');

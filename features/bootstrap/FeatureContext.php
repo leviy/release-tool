@@ -44,7 +44,6 @@ class FeatureContext implements Context
         $this->releaseManager = new ReleaseManager(
             $this->versionControlSystem,
             new SemanticVersioning(),
-            $changelogGenerator,
             []
         );
     }

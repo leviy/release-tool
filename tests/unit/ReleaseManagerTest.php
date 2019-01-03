@@ -64,7 +64,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             ['test-action']
         );
     }
@@ -74,7 +73,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             []
         );
 
@@ -94,7 +92,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             [$this->releaseAction]
         );
 
@@ -115,7 +112,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             [$this->releaseAction]
         );
 
@@ -137,7 +133,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             [$releaseAction, $additionalAction]
         );
 

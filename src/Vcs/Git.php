@@ -105,29 +105,6 @@ final class Git implements VersionControlSystem
         return $this->getCommitsInRange($revisionRange, $pattern);
     }
 
-    /**
-     * @return string[]
-     */
-    public function listVersions(): array
-    {
-        $tags = self::execute(
-            'tag',
-            [
-                '--list',
-                '--sort=taggerdate',
-                sprintf("'%s*'", $this->tagPrefix),
-                '--merged',
-            ]
-        );
-
-        return array_map(
-            function (string $tag): string {
-                return $this->getVersionFromTag($tag);
-            },
-            $tags
-        );
-    }
-
     public function getTagForVersion(string $version): string
     {
         return $this->tagPrefix . $version;

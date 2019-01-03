@@ -94,7 +94,7 @@ class ReleaseCommandTest extends TestCase
     public function testThatItUsesTheReleaseManagerToDetermineTheNextVersion(): void
     {
         $command = new ReleaseCommand($this->releaseManager, $this->changelogGenerator);
-        $this->changelogGenerator->shouldReceive('getChangelog')->andReturn(new Changelog());
+        $this->changelogGenerator->shouldReceive('getUnreleasedChangelog')->andReturn(new Changelog());
         $this->releaseManager->shouldReceive('isValidVersion')->andReturnTrue();
 
         $this->releaseManager->shouldReceive('determineNextVersion')->andReturn('2.3.0');
