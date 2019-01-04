@@ -2,13 +2,18 @@
 declare(strict_types=1);
 
 use Behat\Behat\Context\Context;
-use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
+use Behat\Gherkin\Node\PyStringNode;
+use Leviy\ReleaseTool\Changelog\Formatter\MarkdownFormatter;
+use Leviy\ReleaseTool\Changelog\PullRequestChangelogGenerator;
+use Leviy\ReleaseTool\GitHub\GitHubClient;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
+use Leviy\ReleaseTool\ReleaseAction\GitHubReleaseAction;
 use Leviy\ReleaseTool\ReleaseManager;
+use Leviy\ReleaseTool\Vcs\Commit;
+use Leviy\ReleaseTool\Vcs\Git;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Leviy\ReleaseTool\Versioning\SemanticVersioning;
 use Mockery\MockInterface;
-use PHPUnit\Framework\Assert;
 
 class FeatureContext implements Context
 {
@@ -23,28 +28,42 @@ class FeatureContext implements Context
     private $releaseManager;
 
     /**
-     * @var string|null
-     */
-    private $nextVersion;
-
-    /**
      * @var MockInterface|InformationCollector
      */
     private $informationCollector;
 
+    /**
+     * @var MockInterface|GitHubClient
+     */
+    private $githubClient;
+
+    /**
+     * @var Commit[]
+     */
+    private $mergedPullRequests = [];
+
     public function __construct()
     {
         $this->informationCollector = Mockery::mock(InformationCollector::class);
-        $this->versionControlSystem = Mockery::mock(VersionControlSystem::class);
+
+        $this->versionControlSystem = Mockery::mock(Git::class);
         $this->versionControlSystem->shouldIgnoreMissing();
 
-        $changelogGenerator = Mockery::mock(ChangelogGenerator::class);
-        $changelogGenerator->shouldReceive('getChanges')->andReturn([]);
+        $changelogGenerator = new PullRequestChangelogGenerator($this->versionControlSystem);
+
+        $this->githubClient = Mockery::spy(GitHubClient::class);
+
+        $githubReleaseAction = new GitHubReleaseAction(
+            $changelogGenerator,
+            new MarkdownFormatter([]),
+            $this->versionControlSystem,
+            $this->githubClient
+        );
 
         $this->releaseManager = new ReleaseManager(
             $this->versionControlSystem,
             new SemanticVersioning(),
-            []
+            [$githubReleaseAction]
         );
     }
 
@@ -64,7 +83,22 @@ class FeatureContext implements Context
     {
         $this->selectVersionType($type);
 
-        $this->nextVersion = $this->releaseManager->determineNextVersion($this->informationCollector);
+        $version = $this->releaseManager->determineNextVersion($this->informationCollector);
+        $this->releaseManager->release($version, $this->informationCollector);
+    }
+
+    /**
+     * @When I release version :version
+     */
+    public function iReleaseVersion(string $version): void
+    {
+        $this->versionControlSystem->shouldReceive('getCommitsForVersion')
+            ->with($version, Mockery::any())
+            ->andReturn($this->mergedPullRequests);
+
+        $this->versionControlSystem->shouldReceive('getTagForVersion')->andReturn($version);
+        $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
+        $this->releaseManager->release($version, $this->informationCollector);
     }
 
     /**
@@ -91,8 +125,11 @@ class FeatureContext implements Context
                 return;
         }
 
+        $this->informationCollector->shouldReceive('askConfirmation')->andReturnTrue();
         $this->informationCollector->shouldReceive('askMultipleChoice')->andReturn($answer);
-        $this->nextVersion = $this->releaseManager->determineNextPreReleaseVersion($this->informationCollector);
+
+        $version = $this->releaseManager->determineNextPreReleaseVersion($this->informationCollector);
+        $this->releaseManager->release($version, $this->informationCollector);
     }
 
     /**
@@ -100,7 +137,38 @@ class FeatureContext implements Context
      */
     public function versionShouldBeReleased(string $version): void
     {
-        Assert::assertSame($version, $this->nextVersion);
+        $this->versionControlSystem->shouldHaveReceived('createVersion', [$version]);
+    }
+
+    /**
+     * @Given the pre-release :version was created
+     */
+    public function wasAPreRelease(string $version): void
+    {
+        $this->versionControlSystem->shouldReceive('getPreReleasesForVersion')->andReturn([$version]);
+        $this->versionControlSystem->shouldReceive('getCommitsForVersion')
+            ->with($version, Mockery::any())
+            ->andReturn($this->mergedPullRequests);
+
+        $this->mergedPullRequests = [];
+    }
+
+    /**
+     * @Then a release with title :title should be published on GitHub with the following release notes:
+     */
+    public function aReleaseWithTitleShouldBePublishedOnGitHubWithTheFollowingReleaseNotes(
+        string $version,
+        PyStringNode $releaseNotes
+    ) {
+        $this->githubClient->shouldHaveReceived('createRelease', [Mockery::any(), $version, $releaseNotes->getRaw()]);
+    }
+
+    /**
+     * @Given pull request :title with number :number was merged
+     */
+    public function pullRequestWasMerged(string $title, string $number)
+    {
+        $this->mergedPullRequests[] = new Commit('Merge pull request #' . $number . ' from branch', $title);
     }
 
     private function selectVersionType(?string $type): void
@@ -119,6 +187,10 @@ class FeatureContext implements Context
                 $answers = [];
                 break;
         }
+
+        // Always respond positive to the question "Do you want to push it to the remote repository and perform
+        // additional release steps?"
+        $answers[] = true;
 
         $this->informationCollector->shouldReceive('askConfirmation')->andReturn(...$answers);
     }

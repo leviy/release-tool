@@ -14,7 +14,7 @@ use function substr;
 use function trim;
 use const PHP_EOL;
 
-final class Git implements VersionControlSystem
+class Git implements VersionControlSystem
 {
     private const VERSION_GLOB = '[0-9]*';
 
