@@ -7,6 +7,7 @@ use Leviy\ReleaseTool\Vcs\Commit;
 use Leviy\ReleaseTool\Vcs\VersionControlSystem;
 use Leviy\ReleaseTool\Versioning\Version;
 use function array_map;
+use function array_reduce;
 use function preg_match;
 use function sprintf;
 
@@ -37,20 +38,32 @@ final class PullRequestChangelogGenerator implements ChangelogGenerator
 
     public function getChangelogForVersion(Version $version): Changelog
     {
-        $commits = $this->versionControlSystem->getCommitsForVersion(
-            $version->getVersion(),
-            self::PULL_REQUEST_PATTERN
+        $versions = [];
+        if (!$version->isPreRelease()) {
+            $versions = $this->versionControlSystem->getPreReleasesForVersion($version->getVersion());
+        }
+
+        $versions[] = $version->getVersion();
+
+        return array_reduce(
+            $versions,
+            function (Changelog $changelog, string $version): Changelog {
+                $commits = $this->versionControlSystem->getCommitsForVersion(
+                    $version,
+                    self::PULL_REQUEST_PATTERN
+                );
+
+                $changes = array_map(
+                    [$this, 'createChangeFromCommit'],
+                    $commits
+                );
+
+                $changelog->addVersion($version, $changes);
+
+                return $changelog;
+            },
+            new Changelog()
         );
-
-        $changes = array_map(
-            [$this, 'createChangeFromCommit'],
-            $commits
-        );
-
-        $changelog = new Changelog();
-        $changelog->addVersion($version->getVersion(), $changes);
-
-        return $changelog;
     }
 
     /**

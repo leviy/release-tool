@@ -38,11 +38,41 @@ class PullRequestChangelogGeneratorTest extends TestCase
     {
         $generator = new PullRequestChangelogGenerator($this->versionControlSystem);
 
+        $this->versionControlSystem->shouldReceive('getPreReleasesForVersion')->andReturn([]);
+
         $this->versionControlSystem->shouldReceive('getCommitsForVersion')
             ->andReturn([new Commit('Merge pull request #3 from branchname', 'Lorem ipsum')]);
 
         $changelog = $generator->getChangelogForVersion(SemanticVersion::createFromVersionString('1.0.0'));
 
         $this->assertContains('Lorem ipsum (pull request #3)', $changelog->getChangesForVersion('1.0.0'));
+    }
+
+    public function testVersionChangelogIncludesChangesFromPreReleaseVersions(): void
+    {
+        $generator = new PullRequestChangelogGenerator($this->versionControlSystem);
+
+        $this->versionControlSystem->shouldReceive('getPreReleasesForVersion')
+            ->andReturn(['1.0.0-alpha.1', '1.0.0-beta.1']);
+
+        $this->versionControlSystem->shouldReceive('getCommitsForVersion')
+            ->with('1.0.0-alpha.1', Mockery::any())
+            ->andReturn([new Commit('Merge pull request #1 from branchname', 'First PR')]);
+
+        $this->versionControlSystem->shouldReceive('getCommitsForVersion')
+            ->with('1.0.0-beta.1', Mockery::any())
+            ->andReturn([new Commit('Merge pull request #3 from branchname', 'Lorem ipsum')]);
+
+        $this->versionControlSystem->shouldReceive('getCommitsForVersion')
+            ->with('1.0.0', Mockery::any())
+            ->andReturn([new Commit('Merge pull request #5 from branchname', 'Foo bar')]);
+
+        $changelog = $generator->getChangelogForVersion(SemanticVersion::createFromVersionString('1.0.0'));
+
+        $this->assertSame(['1.0.0-alpha.1', '1.0.0-beta.1', '1.0.0'], $changelog->getVersions());
+
+        $this->assertSame(['First PR (pull request #1)'], $changelog->getChangesForVersion('1.0.0-alpha.1'));
+        $this->assertSame(['Lorem ipsum (pull request #3)'], $changelog->getChangesForVersion('1.0.0-beta.1'));
+        $this->assertSame(['Foo bar (pull request #5)'], $changelog->getChangesForVersion('1.0.0'));
     }
 }

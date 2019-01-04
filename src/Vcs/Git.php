@@ -110,6 +110,21 @@ final class Git implements VersionControlSystem
         return $this->tagPrefix . $version;
     }
 
+    /**
+     * @return string[]
+     *
+     * TODO: this method is based on the assumption that semantic versioning is used. What if we use a different
+     * versioning system?
+     */
+    public function getPreReleasesForVersion(string $version): array
+    {
+        $tag = $this->getTagForVersion($version);
+
+        $preReleaseTagPattern = sprintf('%s-*', $tag);
+
+        return self::execute('tag', ['--list', '--sort=taggerdate', '--merged=' . $tag, $preReleaseTagPattern]);
+    }
+
     private function getVersionFromTag(string $tag): string
     {
         return substr($tag, strlen($this->tagPrefix));

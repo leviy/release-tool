@@ -7,6 +7,7 @@ use Leviy\ReleaseTool\Vcs\Git;
 use Leviy\ReleaseTool\Vcs\ReleaseNotFoundException;
 use PHPUnit\Framework\TestCase;
 use function exec;
+use function sleep;
 
 class GitTest extends TestCase
 {
@@ -126,6 +127,50 @@ class GitTest extends TestCase
         $this->assertCount(2, $commits);
         $this->assertSame('Add composer.json', $commits[0]->title);
         $this->assertSame('Add phpunit.xml', $commits[1]->title);
+    }
+
+    public function testPreReleasesForAReleaseAreReturned(): void
+    {
+        $this->createTag('v1.0.0-alpha.1');
+        $this->createTag('v1.0.0');
+
+        $git = new Git('v');
+        $preReleases = $git->getPreReleasesForVersion('1.0.0');
+
+        $this->assertCount(1, $preReleases);
+        $this->assertContains('v1.0.0-alpha.1', $preReleases);
+    }
+
+    public function testPreReleasesForAReleaseAreReturnedInChronologicalOrder(): void
+    {
+        $this->createTag('v1.0.0-alpha.1');
+        sleep(1);
+        $this->createTag('v1.0.0-beta.1');
+        sleep(1);
+        $this->createTag('v1.0.0-alpha.2');
+        sleep(1);
+        $this->createTag('v1.0.0');
+
+        $git = new Git('v');
+        $preReleases = $git->getPreReleasesForVersion('1.0.0');
+
+        $this->assertSame(['v1.0.0-alpha.1', 'v1.0.0-beta.1', 'v1.0.0-alpha.2'], $preReleases);
+    }
+
+    public function testTagsNotReachableFromTheCurrentCommitAreIgnored(): void
+    {
+        $this->commitFile('phpunit.xml', 'Add phpunit.xml');
+        $this->createTag('v1.0.0-alpha.1');
+
+        $this->createTag('v1.0.0');
+        $this->commitFile('composer.json', 'Add composer.json');
+        $this->createTag('v1.0.0-beta.1');
+
+        $git = new Git('v');
+        $preReleases = $git->getPreReleasesForVersion('1.0.0');
+
+        $this->assertContains('v1.0.0-alpha.1', $preReleases);
+        $this->assertNotContains('v1.0.0-beta.1', $preReleases);
     }
 
     private function commitFile(string $filename, string $commitMessage = 'Commit message'): void

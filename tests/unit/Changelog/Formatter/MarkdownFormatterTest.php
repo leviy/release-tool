@@ -43,19 +43,24 @@ class MarkdownFormatterTest extends TestCase
         $formatter = new MarkdownFormatter([]);
 
         $changelog = new Changelog();
-        $changelog->addVersion('1.0.0', ['Some change']);
-        $changelog->addVersion('1.1.0', ['Other change']);
+        $changelog->addVersion('1.0.0-alpha.1', ['Alpha change']);
+        $changelog->addVersion('1.0.0-beta.1', ['Beta change']);
+        $changelog->addVersion('1.0.0', ['Release change']);
 
         $output = $formatter->format($changelog);
 
         $expected = <<<EXPECTED
-# Changelog for 1.1.0
-
-* Other change
-
 # Changelog for 1.0.0
 
-* Some change
+* Release change
+
+# Changelog for 1.0.0-beta.1
+
+* Beta change
+
+# Changelog for 1.0.0-alpha.1
+
+* Alpha change
 EXPECTED;
 
         $this->assertContains($expected, $output);
