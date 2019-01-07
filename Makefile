@@ -39,5 +39,5 @@ security-tests: vendor
 	vendor/bin/security-checker security:check
 
 bin/box.phar:
-	curl -LS https://github.com/humbug/box/releases/download/3.0.0-RC.0/box.phar -o bin/box.phar
+	curl -LS https://github.com/humbug/box/releases/download/3.4.0/box.phar -o bin/box.phar
 	chmod a+x bin/box.phar
