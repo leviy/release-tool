@@ -34,6 +34,10 @@ class ApplicationTest extends TestCase
 
     public function testAsksForConfirmationBeforeReleasingAVersion(): void
     {
+        if (!Process::isPtySupported()) {
+            $this->markTestSkipped('PTY is not supported on this operating system.');
+        }
+
         $this->commitFile('README.md', 'Initial commit');
 
         $input = new InputStream();
@@ -57,6 +61,10 @@ class ApplicationTest extends TestCase
 
     public function testReleasesWithGivenVersionNumber(): void
     {
+        if (!Process::isPtySupported()) {
+            $this->markTestSkipped('PTY is not supported on this operating system.');
+        }
+
         $this->commitFile('README.md', 'Initial commit');
 
         $input = new InputStream();
@@ -83,6 +91,10 @@ class ApplicationTest extends TestCase
 
     public function testShowsTheChangelogBeforeAskingInteractiveQuestions(): void
     {
+        if (!Process::isPtySupported()) {
+            $this->markTestSkipped('PTY is not supported on this operating system.');
+        }
+
         $this->commitFile('README.md', 'Initial commit');
         $this->createTag('v1.0.0');
         $this->commitFile('phpunit.xml', 'Merge pull request #3 from branchname' . PHP_EOL . PHP_EOL . 'My PR title');
@@ -112,6 +124,10 @@ class ApplicationTest extends TestCase
 
     public function testDeterminesTheVersionNumberBasedOnInteractiveQuestions(): void
     {
+        if (!Process::isPtySupported()) {
+            $this->markTestSkipped('PTY is not supported on this operating system.');
+        }
+
         $this->commitFile('README.md', 'Initial commit');
         $this->createTag('v1.0.0');
         $this->commitFile('phpunit.xml', 'Merge pull request #3 from branchname' . PHP_EOL . PHP_EOL . 'Foo');
