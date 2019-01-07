@@ -28,7 +28,7 @@ integration-tests: vendor
 acceptance-tests: vendor
 	vendor/bin/behat
 
-system-tests: vendor
+system-tests: vendor build/release-tool.phar
 	vendor/bin/phpunit --testsuite system-tests
 
 coding-standards: vendor
