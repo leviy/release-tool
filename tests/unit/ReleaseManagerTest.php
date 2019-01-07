@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Tests\Unit;
 
 use Assert\InvalidArgumentException;
+use Leviy\ReleaseTool\Changelog\Changelog;
 use Leviy\ReleaseTool\Changelog\ChangelogGenerator;
 use Leviy\ReleaseTool\Interaction\InformationCollector;
 use Leviy\ReleaseTool\ReleaseAction\ReleaseAction;
@@ -53,7 +54,7 @@ class ReleaseManagerTest extends TestCase
         $this->releaseAction = Mockery::spy(ReleaseAction::class);
         $this->informationCollector = Mockery::mock(InformationCollector::class);
 
-        $this->changelogGenerator->shouldReceive('getChanges')->andReturn([]);
+        $this->changelogGenerator->shouldReceive('getChangelog')->andReturn(new Changelog());
     }
 
     public function testThatInstantiationThrowsAnErrorWhenActionIsNotReleaseAction(): void
@@ -63,7 +64,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             ['test-action']
         );
     }
@@ -73,7 +73,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             []
         );
 
@@ -93,7 +92,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             [$this->releaseAction]
         );
 
@@ -114,7 +112,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             [$this->releaseAction]
         );
 
@@ -136,7 +133,6 @@ class ReleaseManagerTest extends TestCase
         $releaseManager = new ReleaseManager(
             $this->vcs,
             $this->versioningStrategy,
-            $this->changelogGenerator,
             [$releaseAction, $additionalAction]
         );
 

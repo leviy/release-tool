@@ -7,8 +7,5 @@ use Leviy\ReleaseTool\Versioning\Version;
 
 interface ReleaseAction
 {
-    /**
-     * @param string[] $changeset
-     */
-    public function execute(Version $version, array $changeset): void;
+    public function execute(Version $version): void;
 }

@@ -12,7 +12,6 @@ services:
     arguments:
       - '@vcs.git'
       - '@versioning_scheme.semantic'
-      - '@changelog_generator.pull_request'
       - ['@github.release_action.release']
 
   versioning_scheme.semantic:
@@ -25,6 +24,11 @@ services:
 
   changelog_formatter.markdown:
     class: Leviy\ReleaseTool\Changelog\Formatter\MarkdownFormatter
+    arguments:
+      - ['@changelog_formatter_filter.markdown.github_pull_request_link']
+
+  changelog_formatter_filter.markdown.github_pull_request_link:
+    class: Leviy\ReleaseTool\Changelog\Formatter\Filter\GitHubPullRequestUrlFilter
     arguments:
       - '%github.owner%/%github.repo%'
 

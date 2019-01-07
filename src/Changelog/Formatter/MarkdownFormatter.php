@@ -3,79 +3,57 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Changelog\Formatter;
 
-use function array_map;
-use function array_merge;
-use function preg_replace;
+use Assert\Assertion;
+use Leviy\ReleaseTool\Changelog\Changelog;
+use Leviy\ReleaseTool\Changelog\Formatter\Filter\Filter;
+use function array_reverse;
+use function implode;
 use function sprintf;
+use const PHP_EOL;
 
 final class MarkdownFormatter implements Formatter
 {
-    private const PULL_REQUEST_URL = 'https://github.com/%s/pull/$1';
+    /**
+     * @var Filter[]
+     */
+    private $filters;
 
     /**
-     * @var string
+     * @param Filter[] $filters
      */
-    private $pullRequestUrl;
-
-    /**
-     * @var string
-     */
-    private $issueUrl;
-
-    /**
-     * @var string
-     */
-    private $issuePattern;
-
-    public function __construct(string $repositorySlug, string $issuePattern = '', string $issueUrl = '')
+    public function __construct(array $filters)
     {
-        $this->pullRequestUrl = sprintf(self::PULL_REQUEST_URL, $repositorySlug);
-        $this->issueUrl = $issueUrl;
-        $this->issuePattern = $issuePattern;
+        Assertion::allIsInstanceOf($filters, Filter::class);
+
+        $this->filters = $filters;
     }
 
-    /**
-     * @param string[] $changes
-     *
-     * @return string[]
-     */
-    public function formatChanges(array $changes): array
+    public function format(Changelog $changelog): string
     {
-        $changes = array_map(
-            function (string $line): string {
-                return $this->formatLine($line);
-            },
-            $changes
-        );
+        $lines = [];
 
-        $changes = array_merge(
-            [
-                '# Changelog',
-                '',
-            ],
-            $changes
-        );
+        $versions = $changelog->getVersions();
+        $versions = array_reverse($versions);
 
-        return $changes;
-    }
+        foreach ($versions as $version) {
+            $lines[] = sprintf('# Changelog for %s', $version);
+            $lines[] = '';
 
-    private function formatLine(string $line): string
-    {
-        $line = preg_replace(
-            '/pull request #(\d+)/',
-            'pull request [#$1](' . $this->pullRequestUrl . ')',
-            $line
-        );
+            foreach ($changelog->getChangesForVersion($version) as $change) {
+                $lines[] = '* ' . $this->applyFilters($change);
+            }
 
-        if (!empty($this->issuePattern) && !empty($this->issueUrl)) {
-            $line = preg_replace(
-                $this->issuePattern,
-                '[$1](' . $this->issueUrl . ')',
-                $line
-            );
+            $lines[] = '';
         }
 
-        $line = '* ' . $line;
+        return implode(PHP_EOL, $lines);
+    }
+
+    private function applyFilters(string $line): string
+    {
+        foreach ($this->filters as $filter) {
+            $line = $filter->filter($line);
+        }
 
         return $line;
     }

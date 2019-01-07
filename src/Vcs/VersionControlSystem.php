@@ -16,5 +16,15 @@ interface VersionControlSystem
      */
     public function getCommitsSinceLastVersion(?string $pattern = null): array;
 
+    /**
+     * @return Commit[]
+     */
+    public function getCommitsForVersion(string $version, ?string $pattern = null): array;
+
     public function getTagForVersion(string $version): string;
+
+    /**
+     * @return string[]
+     */
+    public function getPreReleasesForVersion(string $version): array;
 }

@@ -3,62 +3,80 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Tests\Unit\Changelog\Formatter;
 
+use Leviy\ReleaseTool\Changelog\Changelog;
+use Leviy\ReleaseTool\Changelog\Formatter\Filter\Filter;
 use Leviy\ReleaseTool\Changelog\Formatter\MarkdownFormatter;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class MarkdownFormatterTest extends TestCase
 {
-    public function testThatChangesAreFormattedAsAList(): void
+    public function testThatTheOutputContainsAHeaderForEveryVersion(): void
     {
-        $formatter = new MarkdownFormatter('');
+        $formatter = new MarkdownFormatter([]);
 
-        $changes = $formatter->formatChanges(
-            [
-                'Title of first change',
-                'Title of second change',
-            ]
-        );
+        $changelog = new Changelog();
+        $changelog->addVersion('1.0.0', []);
+        $changelog->addVersion('1.1.0', []);
 
-        $this->assertContains('* Title of first change', $changes);
-        $this->assertContains('* Title of second change', $changes);
+        $output = $formatter->format($changelog);
+
+        $this->assertContains('# Changelog for 1.0.0', $output);
+        $this->assertContains('# Changelog for 1.1.0', $output);
     }
 
-    public function testThatPullRequestNumbersLinkToGithub(): void
+    public function testThatTheOutputContainsAListItemForEveryChange(): void
     {
-        $formatter = new MarkdownFormatter('org/repo');
+        $formatter = new MarkdownFormatter([]);
 
-        $changes = $formatter->formatChanges(
-            [
-                'Some change (pull request #3)',
-                'Other change (pull request #457)',
-            ]
-        );
+        $changelog = new Changelog();
+        $changelog->addVersion('1.0.0', ['First change', 'Second change']);
 
-        $this->assertContains('* Some change (pull request [#3](https://github.com/org/repo/pull/3))', $changes);
-        $this->assertContains('* Other change (pull request [#457](https://github.com/org/repo/pull/457))', $changes);
+        $output = $formatter->format($changelog);
+
+        $this->assertContains('* First change', $output);
+        $this->assertContains('* Second change', $output);
     }
 
-    public function testThatIssueNumbersLinkToIssueTracker(): void
+    public function testThatVersionsAreShownInReversedOrder(): void
     {
-        $formatter = new MarkdownFormatter('org/repo', '/(RT-[0-9]+)/', 'https://issuetracker.com/$1');
+        $formatter = new MarkdownFormatter([]);
 
-        $changes = $formatter->formatChanges(
-            [
-                'RT-123: Some change',
-                'Other change',
-            ]
-        );
+        $changelog = new Changelog();
+        $changelog->addVersion('1.0.0-alpha.1', ['Alpha change']);
+        $changelog->addVersion('1.0.0-beta.1', ['Beta change']);
+        $changelog->addVersion('1.0.0', ['Release change']);
 
-        $this->assertContains('* [RT-123](https://issuetracker.com/RT-123): Some change', $changes);
-        $this->assertContains('* Other change', $changes);
+        $output = $formatter->format($changelog);
+
+        $expected = <<<EXPECTED
+# Changelog for 1.0.0
+
+* Release change
+
+# Changelog for 1.0.0-beta.1
+
+* Beta change
+
+# Changelog for 1.0.0-alpha.1
+
+* Alpha change
+EXPECTED;
+
+        $this->assertContains($expected, $output);
     }
 
-    public function testThatTheOutputContainsAHeader(): void
+    public function testThatFiltersAreApplied(): void
     {
-        $formatter = new MarkdownFormatter('');
+        $filter = Mockery::mock(Filter::class);
+        $filter->shouldReceive('filter')->andReturn('Filtered change line');
 
-        $changes = $formatter->formatChanges(['Some change']);
+        $formatter = new MarkdownFormatter([$filter]);
 
-        $this->assertContains('# Changelog', $changes);
+        $changelog = new Changelog();
+        $changelog->addVersion('1.0.0', ['Some change']);
+
+        $this->assertContains('Filtered change line', $formatter->format($changelog));
+        $this->assertNotContains('Some change', $formatter->format($changelog));
     }
 }

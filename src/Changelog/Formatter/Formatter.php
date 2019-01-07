@@ -3,12 +3,9 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Changelog\Formatter;
 
+use Leviy\ReleaseTool\Changelog\Changelog;
+
 interface Formatter
 {
-    /**
-     * @param string[] $changes
-     *
-     * @return string[]
-     */
-    public function formatChanges(array $changes): array;
+    public function format(Changelog $changelog): string;
 }
