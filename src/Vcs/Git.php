@@ -122,7 +122,9 @@ class Git implements VersionControlSystem
 
         $preReleaseTagPattern = sprintf('%s-*', $tag);
 
-        return self::execute('tag', ['--list', '--sort=taggerdate', '--merged=' . $tag, $preReleaseTagPattern]);
+        $tags = self::execute('tag', ['--list', '--sort=taggerdate', '--merged=' . $tag, $preReleaseTagPattern]);
+
+        return array_map([$this, 'getVersionFromTag'], $tags);
     }
 
     private function getVersionFromTag(string $tag): string

@@ -138,7 +138,7 @@ class GitTest extends TestCase
         $preReleases = $git->getPreReleasesForVersion('1.0.0');
 
         $this->assertCount(1, $preReleases);
-        $this->assertContains('v1.0.0-alpha.1', $preReleases);
+        $this->assertContains('1.0.0-alpha.1', $preReleases);
     }
 
     public function testPreReleasesForAReleaseAreReturnedInChronologicalOrder(): void
@@ -154,7 +154,7 @@ class GitTest extends TestCase
         $git = new Git('v');
         $preReleases = $git->getPreReleasesForVersion('1.0.0');
 
-        $this->assertSame(['v1.0.0-alpha.1', 'v1.0.0-beta.1', 'v1.0.0-alpha.2'], $preReleases);
+        $this->assertSame(['1.0.0-alpha.1', '1.0.0-beta.1', '1.0.0-alpha.2'], $preReleases);
     }
 
     public function testTagsNotReachableFromTheCurrentCommitAreIgnored(): void
@@ -169,8 +169,8 @@ class GitTest extends TestCase
         $git = new Git('v');
         $preReleases = $git->getPreReleasesForVersion('1.0.0');
 
-        $this->assertContains('v1.0.0-alpha.1', $preReleases);
-        $this->assertNotContains('v1.0.0-beta.1', $preReleases);
+        $this->assertContains('1.0.0-alpha.1', $preReleases);
+        $this->assertNotContains('1.0.0-beta.1', $preReleases);
     }
 
     private function commitFile(string $filename, string $commitMessage = 'Commit message'): void
