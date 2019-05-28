@@ -1,4 +1,4 @@
-<img src="docs/leviy-logo.png" alt="LEVIY logo" align="right" />
+<img src="docs/logo.svg" width="200" alt="Leviy logo" align="right" />
 
 # Release Tool
 
