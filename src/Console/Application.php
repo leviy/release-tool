@@ -6,6 +6,7 @@ namespace Leviy\ReleaseTool\Console;
 use Leviy\ReleaseTool\Configuration\CredentialsConfiguration;
 use Leviy\ReleaseTool\GitHub\GitHubRepositoryParser;
 use Leviy\ReleaseTool\Vcs\Git;
+use RuntimeException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Application as SymfonyApplication;
@@ -14,6 +15,7 @@ use Symfony\Component\Console\DependencyInjection\AddConsoleCommandPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Yaml\Yaml;
+use function file_exists;
 use function file_get_contents;
 use function getenv;
 use function rtrim;
@@ -68,11 +70,21 @@ final class Application extends SymfonyApplication
 
     private function loadUserConfiguration(ContainerBuilder $container): void
     {
-        $homeDirectory = rtrim(getenv('HOME') ?: getenv('USERPROFILE'), '/\\');
+        $homeDirectory = $this->getHomeDirectory();
 
-        $config = Yaml::parse(
-            file_get_contents($homeDirectory . '/.release-tool/auth.yml')
-        );
+        $configFile = $homeDirectory . '/.release-tool/auth.yml';
+
+        if (!file_exists($configFile)) {
+            throw new RuntimeException(sprintf('The file %s needs to exist and contain a GitHub access token', $configFile));
+        }
+
+        $yamlContents = file_get_contents($configFile);
+
+        if (!$yamlContents) {
+            throw new RuntimeException('Error reading the configuration file');
+        }
+
+        $config = Yaml::parse($yamlContents);
 
         $processor = new Processor();
         $configuration = new CredentialsConfiguration();
@@ -82,5 +94,16 @@ final class Application extends SymfonyApplication
         );
 
         $container->setParameter('credentials.github.token', $processedConfiguration['github']['token']);
+    }
+
+    private function getHomeDirectory(): string
+    {
+        $homeDirectory = getenv('HOME') ?: getenv('USERPROFILE');
+
+        if (!$homeDirectory) {
+            throw new RuntimeException('Unable to determine the home directory from HOME or USERPROFILE');
+        }
+
+        return rtrim($homeDirectory, '/\\');
     }
 }

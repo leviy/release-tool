@@ -98,7 +98,7 @@ EOF
         }
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var StyleInterface $style */
         $style = new SymfonyStyle($input, $output);
@@ -113,7 +113,7 @@ EOF
         $style->text(sprintf('This will release version <info>%s</info>.', $version));
 
         if (!$style->confirm('Do you want to continue?')) {
-            return;
+            return 0;
         }
 
         $informationCollector = new InteractiveInformationCollector($style);
@@ -121,5 +121,7 @@ EOF
         $this->releaseManager->release($version, $informationCollector);
 
         $style->success('Version ' . $version . ' has been released.');
+
+        return 0;
     }
 }
