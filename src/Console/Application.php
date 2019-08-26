@@ -19,6 +19,7 @@ use function file_exists;
 use function file_get_contents;
 use function getenv;
 use function rtrim;
+use function sprintf;
 
 final class Application extends SymfonyApplication
 {
@@ -75,7 +76,9 @@ final class Application extends SymfonyApplication
         $configFile = $homeDirectory . '/.release-tool/auth.yml';
 
         if (!file_exists($configFile)) {
-            throw new RuntimeException(sprintf('The file %s needs to exist and contain a GitHub access token', $configFile));
+            throw new RuntimeException(
+                sprintf('The file %s needs to exist and contain a GitHub access token', $configFile)
+            );
         }
 
         $yamlContents = file_get_contents($configFile);
