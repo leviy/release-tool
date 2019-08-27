@@ -26,6 +26,6 @@ final class GitHubPullRequestUrlFilter implements Filter
             '/pull request #(\d+)/',
             'pull request [#$1](' . $this->pullRequestUrl . ')',
             $line
-        );
+        ) ?: $line;
     }
 }

@@ -59,7 +59,7 @@ final class SemanticVersioning implements VersioningScheme
         }
 
         if ($currentVersion->isPreRelease()) {
-            $currentPreReleaseType = explode('.', $currentVersion->getPreReleaseIdentifier())[0];
+            $currentPreReleaseType = explode('.', (string) $currentVersion->getPreReleaseIdentifier())[0];
 
             $defaultPreReleaseType = self::PRE_RELEASE_TYPES[$currentPreReleaseType] ?? null;
         }

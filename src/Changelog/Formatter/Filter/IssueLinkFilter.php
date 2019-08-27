@@ -33,6 +33,6 @@ final class IssueLinkFilter implements Filter
             $this->pattern,
             '[$1](' . $this->url . ')',
             $line
-        );
+        ) ?: $line;
     }
 }
