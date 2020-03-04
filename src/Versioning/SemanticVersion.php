@@ -51,6 +51,8 @@ final class SemanticVersion implements Version
 
     public static function createFromVersionString(string $version): self
     {
+        $matches = [];
+
         if (!preg_match(self::VERSION_PATTERN, $version, $matches)) {
             throw new InvalidArgumentException(
                 sprintf('Version number "%s" is not a valid semantic version.', $version)
