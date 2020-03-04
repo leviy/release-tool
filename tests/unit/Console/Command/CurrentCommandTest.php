@@ -36,7 +36,7 @@ class CurrentCommandTest extends TestCase
 
         $commandTester->execute([]);
 
-        $this->assertContains('Current version: 3.2.0', $commandTester->getDisplay());
+        $this->assertStringContainsString('Current version: 3.2.0', $commandTester->getDisplay());
         $this->assertSame(0, $commandTester->getStatusCode());
     }
 
@@ -53,7 +53,7 @@ class CurrentCommandTest extends TestCase
 
         $commandTester->execute([]);
 
-        $this->assertContains('No existing version found', $commandTester->getDisplay());
+        $this->assertStringContainsString('No existing version found', $commandTester->getDisplay());
         $this->assertSame(1, $commandTester->getStatusCode());
     }
 }

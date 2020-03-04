@@ -10,8 +10,8 @@ class CredentialsConfiguration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('credentials');
+        $treeBuilder = new TreeBuilder('credentials');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()

@@ -29,7 +29,7 @@ class ApplicationTest extends TestCase
         $process->run();
 
         $this->assertTrue($process->isSuccessful(), 'The command returned a non-zero exit code.');
-        $this->assertContains('Leviy Release Tool', $process->getOutput());
+        $this->assertStringContainsString('Leviy Release Tool', $process->getOutput());
     }
 
     public function testAsksForConfirmationBeforeReleasingAVersion(): void
@@ -54,8 +54,8 @@ class ApplicationTest extends TestCase
 
         $process->wait();
 
-        $this->assertContains('This will release version 1.0.0', $process->getOutput());
-        $this->assertContains('Do you want to continue?', $process->getOutput());
+        $this->assertStringContainsString('This will release version 1.0.0', $process->getOutput());
+        $this->assertStringContainsString('Do you want to continue?', $process->getOutput());
         $this->assertEmpty($this->getTags());
     }
 
@@ -119,7 +119,7 @@ class ApplicationTest extends TestCase
 
         $process->wait();
 
-        $this->assertContains('My PR title (pull request #3)', $process->getOutput());
+        $this->assertStringContainsString('My PR title (pull request #3)', $process->getOutput());
     }
 
     public function testDeterminesTheVersionNumberBasedOnInteractiveQuestions(): void
@@ -169,7 +169,7 @@ class ApplicationTest extends TestCase
         $process->run();
 
         $this->assertTrue($process->isSuccessful(), 'The command returned a non-zero exit code.');
-        $this->assertContains('Current version: 1.2.5', $process->getOutput());
+        $this->assertStringContainsString('Current version: 1.2.5', $process->getOutput());
     }
 
     private function commitFile(string $filename, string $commitMessage): void

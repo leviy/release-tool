@@ -2,6 +2,12 @@
 <ruleset>
     <rule ref="LEVIY"/>
 
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
+        <properties>
+            <property name="enableNativeTypeHint" value="false"/>
+        </properties>
+    </rule>
+
     <config name="ignore_warnings_on_exit" value="1"/>
 
     <file>src/</file>
