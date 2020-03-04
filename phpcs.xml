@@ -10,6 +10,8 @@
 
     <config name="ignore_warnings_on_exit" value="1"/>
 
+    <arg name="cache" value=".phpcs-cache"/>
+
     <file>src/</file>
     <file>tests/</file>
 </ruleset>

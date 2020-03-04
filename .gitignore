@@ -1,3 +1,5 @@
 /vendor/
 /bin/box.phar
 /build
+/.phpcs-cache
+/.phpunit.result.cache
