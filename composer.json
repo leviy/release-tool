@@ -18,7 +18,7 @@
         "leviy/coding-standard": "^4.0",
         "mockery/mockery": "^1.1",
         "phpstan/phpstan": "^0.12.14",
-        "phpunit/phpunit": "^9.0",
+        "phpunit/phpunit": "^8.5",
         "sensiolabs/security-checker": "^6.0",
         "symfony/process": "^5.0"
     },
