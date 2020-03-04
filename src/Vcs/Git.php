@@ -41,6 +41,9 @@ class Git implements VersionControlSystem
     {
         $command = sprintf('git %s %s', $command, implode(' ', $arguments));
 
+        $output = null;
+        $exitCode = null;
+
         exec($command . ' 2>&1', $output, $exitCode);
 
         if ($exitCode > 0) {
@@ -137,7 +140,7 @@ class Git implements VersionControlSystem
      */
     private function getCommitsInRange(string $revisionRange, ?string $pattern = null): array
     {
-        $arguments[] = $revisionRange;
+        $arguments = [$revisionRange];
 
         $arguments[] = '--format="%s%x1F%b%x1E"';
 
@@ -154,7 +157,7 @@ class Git implements VersionControlSystem
 
         $commits = array_map(
             function (string $commit): Commit {
-                [$title, $body] = explode("\x1F", trim($commit));
+                list($title, $body) = explode("\x1F", trim($commit));
 
                 return new Commit($title, $body);
             },

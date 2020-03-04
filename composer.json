@@ -4,23 +4,23 @@
     "description": "Command line tool for releasing new versions of a project",
     "license": "MIT",
     "require": {
-        "php": "^7.1",
-        "beberlei/assert": "^2.9",
+        "php": "^7.2",
+        "beberlei/assert": "^3.2",
         "guzzlehttp/guzzle": "^6.3",
         "padraic/phar-updater": "^1.0",
-        "symfony/config": "^4.0",
-        "symfony/console": "^4.0",
-        "symfony/dependency-injection": "^4.0",
-        "symfony/yaml": "^4.0"
+        "symfony/config": "^5.0",
+        "symfony/console": "^5.0",
+        "symfony/dependency-injection": "^5.0",
+        "symfony/yaml": "^5.0"
     },
     "require-dev": {
         "behat/behat": "^3.4",
-        "leviy/coding-standard": "^3.5",
+        "leviy/coding-standard": "^4.0",
         "mockery/mockery": "^1.1",
-        "phpstan/phpstan": "^0.11.15",
-        "phpunit/phpunit": "^7.1",
-        "sensiolabs/security-checker": "^5.0",
-        "symfony/process": "^4.2"
+        "phpstan/phpstan": "^0.12.14",
+        "phpunit/phpunit": "^8.5",
+        "sensiolabs/security-checker": "^6.0",
+        "symfony/process": "^5.0"
     },
     "config": {
         "sort-packages": true

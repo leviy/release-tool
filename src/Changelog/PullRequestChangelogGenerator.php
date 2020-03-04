@@ -71,6 +71,8 @@ final class PullRequestChangelogGenerator implements ChangelogGenerator
      */
     private function createChangeFromCommit(Commit $commit): string
     {
+        $matches = [];
+
         preg_match('/' . self::PULL_REQUEST_PATTERN . '/', $commit->title, $matches);
 
         return sprintf('%s (pull request #%d)', $commit->body, $matches[1]);

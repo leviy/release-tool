@@ -21,8 +21,8 @@ class MarkdownFormatterTest extends TestCase
 
         $output = $formatter->format($changelog);
 
-        $this->assertContains('# Changelog for 1.0.0', $output);
-        $this->assertContains('# Changelog for 1.1.0', $output);
+        $this->assertStringContainsString('# Changelog for 1.0.0', $output);
+        $this->assertStringContainsString('# Changelog for 1.1.0', $output);
     }
 
     public function testThatTheOutputContainsAListItemForEveryChange(): void
@@ -34,8 +34,8 @@ class MarkdownFormatterTest extends TestCase
 
         $output = $formatter->format($changelog);
 
-        $this->assertContains('* First change', $output);
-        $this->assertContains('* Second change', $output);
+        $this->assertStringContainsString('* First change', $output);
+        $this->assertStringContainsString('* Second change', $output);
     }
 
     public function testThatVersionsAreShownInReversedOrder(): void
@@ -63,7 +63,7 @@ class MarkdownFormatterTest extends TestCase
 * Alpha change
 EXPECTED;
 
-        $this->assertContains($expected, $output);
+        $this->assertStringContainsString($expected, $output);
     }
 
     public function testThatFiltersAreApplied(): void
@@ -76,7 +76,7 @@ EXPECTED;
         $changelog = new Changelog();
         $changelog->addVersion('1.0.0', ['Some change']);
 
-        $this->assertContains('Filtered change line', $formatter->format($changelog));
-        $this->assertNotContains('Some change', $formatter->format($changelog));
+        $this->assertStringContainsString('Filtered change line', $formatter->format($changelog));
+        $this->assertStringNotContainsString('Some change', $formatter->format($changelog));
     }
 }

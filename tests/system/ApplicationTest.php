@@ -29,22 +29,17 @@ class ApplicationTest extends TestCase
         $process->run();
 
         $this->assertTrue($process->isSuccessful(), 'The command returned a non-zero exit code.');
-        $this->assertContains('Leviy Release Tool', $process->getOutput());
+        $this->assertStringContainsString('Leviy Release Tool', $process->getOutput());
     }
 
     public function testAsksForConfirmationBeforeReleasingAVersion(): void
     {
-        if (!Process::isPtySupported()) {
-            $this->markTestSkipped('PTY is not supported on this operating system.');
-        }
-
         $this->commitFile('README.md', 'Initial commit');
 
         $input = new InputStream();
 
         $process = new Process(['build/release-tool.phar', 'release', '--no-ansi', '1.0.0']);
         $process->setInput($input);
-        $process->setPty(true);
         $process->start();
 
         // EOL simulates [Enter]
@@ -54,24 +49,19 @@ class ApplicationTest extends TestCase
 
         $process->wait();
 
-        $this->assertContains('This will release version 1.0.0', $process->getOutput());
-        $this->assertContains('Do you want to continue?', $process->getOutput());
+        $this->assertStringContainsString('This will release version 1.0.0', $process->getOutput());
+        $this->assertStringContainsString('Do you want to continue?', $process->getOutput());
         $this->assertEmpty($this->getTags());
     }
 
     public function testReleasesWithGivenVersionNumber(): void
     {
-        if (!Process::isPtySupported()) {
-            $this->markTestSkipped('PTY is not supported on this operating system.');
-        }
-
         $this->commitFile('README.md', 'Initial commit');
 
         $input = new InputStream();
 
         $process = new Process(['build/release-tool.phar', 'release', '1.0.0']);
         $process->setInput($input);
-        $process->setPty(true);
         $process->start();
 
         // EOL simulates [Enter]
@@ -91,10 +81,6 @@ class ApplicationTest extends TestCase
 
     public function testShowsTheChangelogBeforeAskingInteractiveQuestions(): void
     {
-        if (!Process::isPtySupported()) {
-            $this->markTestSkipped('PTY is not supported on this operating system.');
-        }
-
         $this->commitFile('README.md', 'Initial commit');
         $this->createTag('v1.0.0');
         $this->commitFile('phpunit.xml', 'Merge pull request #3 from branchname' . PHP_EOL . PHP_EOL . 'My PR title');
@@ -103,7 +89,6 @@ class ApplicationTest extends TestCase
 
         $process = new Process(['build/release-tool.phar', 'release']);
         $process->setInput($input);
-        $process->setPty(true);
         $process->start();
 
         // EOL simulates [Enter]
@@ -119,15 +104,11 @@ class ApplicationTest extends TestCase
 
         $process->wait();
 
-        $this->assertContains('My PR title (pull request #3)', $process->getOutput());
+        $this->assertStringContainsString('My PR title (pull request #3)', $process->getOutput());
     }
 
     public function testDeterminesTheVersionNumberBasedOnInteractiveQuestions(): void
     {
-        if (!Process::isPtySupported()) {
-            $this->markTestSkipped('PTY is not supported on this operating system.');
-        }
-
         $this->commitFile('README.md', 'Initial commit');
         $this->createTag('v1.0.0');
         $this->commitFile('phpunit.xml', 'Merge pull request #3 from branchname' . PHP_EOL . PHP_EOL . 'Foo');
@@ -136,7 +117,6 @@ class ApplicationTest extends TestCase
 
         $process = new Process(['build/release-tool.phar', 'release']);
         $process->setInput($input);
-        $process->setPty(true);
         $process->start();
 
         // EOL simulates [Enter]
@@ -169,7 +149,7 @@ class ApplicationTest extends TestCase
         $process->run();
 
         $this->assertTrue($process->isSuccessful(), 'The command returned a non-zero exit code.');
-        $this->assertContains('Current version: 1.2.5', $process->getOutput());
+        $this->assertStringContainsString('Current version: 1.2.5', $process->getOutput());
     }
 
     private function commitFile(string $filename, string $commitMessage): void
