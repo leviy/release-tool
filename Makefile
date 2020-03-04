@@ -16,7 +16,6 @@ dist: build/release-tool.phar
 check test: static-analysis unit-tests integration-tests acceptance-tests system-tests coding-standards security-tests
 
 static-analysis: vendor
-	vendor/bin/parallel-lint $(sources)
 	vendor/bin/phpstan analyse --level=7 --configuration=phpstan.neon $(sources)
 
 unit-tests: vendor
