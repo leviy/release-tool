@@ -6,6 +6,7 @@ namespace Leviy\ReleaseTool\Console;
 use Leviy\ReleaseTool\Configuration\CredentialsConfiguration;
 use Leviy\ReleaseTool\GitHub\GitHubRepositoryParser;
 use Leviy\ReleaseTool\Vcs\Git;
+use Leviy\ReleaseTool\Vcs\MissingConfigurationException;
 use RuntimeException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -76,7 +77,7 @@ final class Application extends SymfonyApplication
         $configFile = $homeDirectory . '/.release-tool/auth.yml';
 
         if (!file_exists($configFile)) {
-            throw new RuntimeException(
+            throw new MissingConfigurationException(
                 sprintf('The file %s needs to exist and contain a GitHub access token', $configFile)
             );
         }

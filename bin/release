@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Leviy\ReleaseTool\Console\Application;
+use Leviy\ReleaseTool\Vcs\MissingConfigurationException;
+use Leviy\ReleaseTool\Vcs\RepositoryNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 if (file_exists(__DIR__ . '/../../../autoload.php')) {
@@ -12,6 +14,11 @@ if (file_exists(__DIR__ . '/../../../autoload.php')) {
 }
 
 $container = new ContainerBuilder();
-$application = new Application($container);
+try {
+    $application = new Application($container);
+} catch (RepositoryNotFoundException | MissingConfigurationException $exception) {
+    echo $exception->getMessage() . PHP_EOL;
+    exit(1);
+}
 
 $application->run();

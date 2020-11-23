@@ -32,7 +32,6 @@ class Git implements VersionControlSystem
 
     /**
      * @param string[] $arguments
-     *
      * @return string[]
      *
      * @internal
@@ -47,7 +46,7 @@ class Git implements VersionControlSystem
         exec($command . ' 2>&1', $output, $exitCode);
 
         if ($exitCode > 0) {
-            throw new GitException(implode(PHP_EOL, $output));
+            self::checkExitCode($exitCode, $output);
         }
 
         return $output;
@@ -128,6 +127,20 @@ class Git implements VersionControlSystem
         $tags = self::execute('tag', ['--list', '--sort=taggerdate', '--merged=' . $tag, $preReleaseTagPattern]);
 
         return array_map([$this, 'getVersionFromTag'], $tags);
+    }
+
+    /**
+     * @param mixed[] $output
+     * @SuppressWarnings(PHPMD.ExitExpression)
+     */
+    protected static function checkExitCode(int $exitCode, array $output): void
+    {
+        switch ($exitCode) {
+            case 128:
+                throw new RepositoryNotFoundException('Error: Repository not found in current path.');
+            default:
+                throw new GitException(implode(PHP_EOL, $output));
+        }
     }
 
     private function getVersionFromTag(string $tag): string
