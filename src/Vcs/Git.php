@@ -60,6 +60,17 @@ class Git implements VersionControlSystem
         return $this->getVersionFromTag($tag);
     }
 
+    public function findLastVersion(): ?string
+    {
+        try {
+            $tag = $this->describe();
+        } catch (ReleaseNotFoundException $exception) {
+            return null;
+        }
+
+        return $this->getVersionFromTag($tag);
+    }
+
     public function createVersion(string $version): void
     {
         self::execute(
