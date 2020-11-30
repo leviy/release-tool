@@ -1,0 +1,45 @@
+name: Deploy
+on:
+  push:
+  release:
+    # Every published release will trigger a distribution app build which will
+    # added to the release a asset.
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP with Composer v1
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.2'
+          tools: composer:v1
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Create build
+        run: make dist
+      - uses: actions/upload-release-asset@v1
+        if: github.event_name == 'release'
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+         upload_url: ${{ github.event.release.upload_url }}
+         asset_path: build/release-tool.phar
+         asset_name: release-tool.phar
+         asset_content_type: application/zip
