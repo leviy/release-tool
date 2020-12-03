@@ -72,6 +72,7 @@ class FeatureContext implements Context
      */
     public function aReleaseOnThisBranchWithVersion(string $version): void
     {
+        $this->versionControlSystem->shouldReceive('findLastVersion')->andReturn(true);
         $this->versionControlSystem->shouldReceive('getLastVersion')->andReturn($version);
     }
 

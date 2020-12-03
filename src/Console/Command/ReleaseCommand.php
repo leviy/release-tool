@@ -74,25 +74,15 @@ EOF
         if ($input->getArgument('version') === null) {
             $style = new SymfonyStyle($input, $output);
 
-            $currentVersion = $this->releaseManager->getCurrentVersion();
+            $this->findLastVersion($style);
 
-            $style->text('The previous version on this branch is <info>' . $currentVersion . '</info>.');
             $style->newLine();
-
-            $style->text('A new release will introduce the following changes:');
-            $style->listing($this->changelogGenerator->getUnreleasedChangelog()->getUnreleasedChanges());
 
             $informationCollector = new InteractiveInformationCollector($style);
 
-            if ($input->getOption('pre-release')) {
-                $version = $this->releaseManager->determineNextPreReleaseVersion($informationCollector);
 
-                $input->setArgument('version', $version);
-
-                return;
-            }
-
-            $version = $this->releaseManager->determineNextVersion($informationCollector);
+            $isPreRelease = $input->getOption('pre-release') ? true : false;
+            $version = $this->determineNextVersion($isPreRelease, $informationCollector);
 
             $input->setArgument('version', $version);
         }
@@ -123,5 +113,31 @@ EOF
         $style->success('Version ' . $version . ' has been released.');
 
         return 0;
+    }
+
+    protected function findLastVersion(SymfonyStyle $style): void
+    {
+        if ($this->releaseManager->hasVersions() === false) {
+            $style->text('No version found.');
+
+            return;
+        }
+
+        $currentVersion = $this->releaseManager->getCurrentVersion();
+        $style->text('The previous version on this branch is <info>' . $currentVersion . '</info>.');
+
+        $style->text('A new release will introduce the following changes:');
+        $style->listing($this->changelogGenerator->getUnreleasedChangelog()->getUnreleasedChanges());
+    }
+
+    protected function determineNextVersion(
+        bool $isPreRelease,
+        InteractiveInformationCollector $informationCollector
+    ): string {
+        if ($isPreRelease) {
+            return $this->releaseManager->determineNextPreReleaseVersion($informationCollector);
+        }
+
+        return $this->releaseManager->determineNextVersion($informationCollector);
     }
 }
