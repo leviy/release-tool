@@ -5,6 +5,7 @@
     "directories-bin": [
         "config"
     ],
+    "compression": "GZ",
     "force-autodiscovery": true,
     "git-version": "package_version",
     "output": "build/release-tool.phar"
