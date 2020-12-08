@@ -20,6 +20,7 @@ use function file_get_contents;
 use function getenv;
 use function rtrim;
 use function sprintf;
+use const PHP_EOL;
 
 final class Application extends SymfonyApplication
 {
@@ -69,6 +70,9 @@ final class Application extends SymfonyApplication
         $container->setParameter('github.repo', $githubParser->getRepository($url));
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.ExitExpression)
+     */
     private function loadUserConfiguration(ContainerBuilder $container): void
     {
         $homeDirectory = $this->getHomeDirectory();
@@ -76,9 +80,8 @@ final class Application extends SymfonyApplication
         $configFile = $homeDirectory . '/.release-tool/auth.yml';
 
         if (!file_exists($configFile)) {
-            throw new RuntimeException(
-                sprintf('The file %s needs to exist and contain a GitHub access token', $configFile)
-            );
+            echo(sprintf('The file %s needs to exist and contain a GitHub access token.' . PHP_EOL, $configFile));
+            exit(1);
         }
 
         $yamlContents = file_get_contents($configFile);
