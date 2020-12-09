@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Leviy\ReleaseTool\Console\Application;
-use Leviy\ReleaseTool\Vcs\MissingConfigurationException;
+use Leviy\ReleaseTool\Configuration\MissingConfigurationException;
 use Leviy\ReleaseTool\Vcs\RepositoryNotFoundException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 

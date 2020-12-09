@@ -47,6 +47,11 @@ class ReleaseManager
         return $this->versionControlSystem->getLastVersion();
     }
 
+    public function hasVersions(): bool
+    {
+        return $this->versionControlSystem->findLastVersion() !== null;
+    }
+
     public function release(string $versionString, InformationCollector $informationCollector): void
     {
         $this->versionControlSystem->createVersion($versionString);
@@ -72,6 +77,10 @@ class ReleaseManager
 
     public function determineNextVersion(InformationCollector $informationCollector): string
     {
+        if ($this->versionControlSystem->findLastVersion() === null) {
+            return '1.0.0';
+        }
+
         $current = $this->versionControlSystem->getLastVersion();
         $currentVersion = $this->versioningScheme->getVersion($current);
 
@@ -80,6 +89,14 @@ class ReleaseManager
 
     public function determineNextPreReleaseVersion(InformationCollector $informationCollector): string
     {
+        if ($this->versionControlSystem->findLastVersion() === null) {
+            $currentVersion = $this->versioningScheme->getVersion('0.0.0');
+
+            return $this->versioningScheme
+                ->getNextPreReleaseVersion($currentVersion, $informationCollector)
+                ->getVersion();
+        }
+
         $current = $this->versionControlSystem->getLastVersion();
         $currentVersion = $this->versioningScheme->getVersion($current);
 

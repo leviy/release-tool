@@ -7,7 +7,7 @@ to automate the release of new versions of your software. It is written in PHP
 but can be used for any type of project, as long as you have PHP installed on
 your machine.
 
-[![Build status](https://travis-ci.com/leviy/release-tool.svg)](https://travis-ci.com/leviy/release-tool)
+[![Test](https://github.com/leviy/release-tool/workflows/Test/badge.svg)](https://github.com/leviy/release-tool/actions?query=workflow%3ATest)
 [![License](https://img.shields.io/github/license/leviy/release-tool.svg)](https://github.com/leviy/release-tool/blob/master/LICENSE.txt)
 [![GitHub release](https://img.shields.io/github/release/leviy/release-tool.svg)](https://github.com/leviy/release-tool/releases/latest)
 [![Required PHP version](https://img.shields.io/packagist/php-v/leviy/release-tool.svg)](https://github.com/leviy/release-tool/blob/master/composer.json)

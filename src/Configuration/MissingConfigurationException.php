@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Leviy\ReleaseTool\Vcs;
+namespace Leviy\ReleaseTool\Configuration;
 
 use RuntimeException;
 

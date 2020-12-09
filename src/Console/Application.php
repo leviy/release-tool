@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Console;
 
 use Leviy\ReleaseTool\Configuration\CredentialsConfiguration;
+use Leviy\ReleaseTool\Configuration\MissingConfigurationException;
 use Leviy\ReleaseTool\GitHub\GitHubRepositoryParser;
 use Leviy\ReleaseTool\Vcs\Git;
-use Leviy\ReleaseTool\Vcs\MissingConfigurationException;
 use RuntimeException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -70,6 +70,9 @@ final class Application extends SymfonyApplication
         $container->setParameter('github.repo', $githubParser->getRepository($url));
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.ExitExpression)
+     */
     private function loadUserConfiguration(ContainerBuilder $container): void
     {
         $homeDirectory = $this->getHomeDirectory();
@@ -78,7 +81,7 @@ final class Application extends SymfonyApplication
 
         if (!file_exists($configFile)) {
             throw new MissingConfigurationException(
-                sprintf('The file %s needs to exist and contain a GitHub access token', $configFile)
+                sprintf('The file %s needs to exist and contain a GitHub access token.', $configFile)
             );
         }
 

@@ -79,6 +79,27 @@ class ApplicationTest extends TestCase
         $this->assertSame(['v1.0.0'], $this->getTags());
     }
 
+    public function testReleasesWithoutGivenVersionNumber(): void
+    {
+        $this->commitFile('README.md', 'First commit');
+
+        $input = new InputStream();
+
+        $process = new Process(['build/release-tool.phar', 'release']);
+        $process->setInput($input);
+        $process->start();
+
+        // EOL simulates [Enter]
+        // Do you want to continue? (yes/no)
+        $input->write('no' . PHP_EOL);
+        $input->close();
+
+        $process->wait();
+
+        $this->assertStringContainsString('This will release version 1.0.0.', $process->getOutput());
+        $this->assertStringContainsString('Do you want to continue?', $process->getOutput());
+    }
+
     public function testShowsTheChangelogBeforeAskingInteractiveQuestions(): void
     {
         $this->commitFile('README.md', 'Initial commit');

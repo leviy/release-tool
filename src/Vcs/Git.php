@@ -59,6 +59,17 @@ class Git implements VersionControlSystem
         return $this->getVersionFromTag($tag);
     }
 
+    public function findLastVersion(): ?string
+    {
+        try {
+            $tag = $this->describe();
+        } catch (ReleaseNotFoundException $exception) {
+            return null;
+        }
+
+        return $this->getVersionFromTag($tag);
+    }
+
     public function createVersion(string $version): void
     {
         self::execute(
@@ -131,7 +142,6 @@ class Git implements VersionControlSystem
 
     /**
      * @param mixed[] $output
-     * @SuppressWarnings(PHPMD.ExitExpression)
      */
     protected static function checkExitCode(int $exitCode, array $output): void
     {
