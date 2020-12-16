@@ -6,6 +6,9 @@ on:
     # added to the release a asset.
     types: [published]
 
+env:
+  COMPOSER_AUTH: ${{ secrets.COMPOSER_GITHUB_AUTH }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
