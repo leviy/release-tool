@@ -1,6 +1,9 @@
 name: Test
 on: push
 
+env:
+  COMPOSER_AUTH: ${{ secrets.COMPOSER_GITHUB_AUTH }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
