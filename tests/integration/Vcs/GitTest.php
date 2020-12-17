@@ -95,6 +95,7 @@ class GitTest extends TestCase
     public function testThatCommitsSinceTheFirstCommitAreReturnedIfNoReleasesExist(): void
     {
         $git = new Git();
+
         $commits = $git->getCommitsSinceLastVersion();
 
         $this->assertCount(1, $commits);

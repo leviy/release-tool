@@ -10,6 +10,7 @@ use function explode;
 use function implode;
 use function sprintf;
 use function strlen;
+use function strpos;
 use function substr;
 use function trim;
 use const PHP_EOL;
@@ -32,7 +33,6 @@ class Git implements VersionControlSystem
 
     /**
      * @param string[] $arguments
-     *
      * @return string[]
      *
      * @internal
@@ -45,6 +45,10 @@ class Git implements VersionControlSystem
         $exitCode = null;
 
         exec($command . ' 2>&1', $output, $exitCode);
+
+        if ($exitCode > 0 && strpos(implode(' ', $output), 'not a git repository') > 0) {
+            throw new RepositoryNotFoundException('Error: Repository not found in current path.');
+        }
 
         if ($exitCode > 0) {
             throw new GitException(implode(PHP_EOL, $output));
