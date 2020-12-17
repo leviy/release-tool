@@ -10,6 +10,7 @@ use function explode;
 use function implode;
 use function sprintf;
 use function strlen;
+use function strpos;
 use function substr;
 use function trim;
 use const PHP_EOL;
@@ -45,8 +46,12 @@ class Git implements VersionControlSystem
 
         exec($command . ' 2>&1', $output, $exitCode);
 
+        if ($exitCode > 0 && strpos(implode(' ', $output), 'not a git repository') > 0) {
+            throw new RepositoryNotFoundException('Error: Repository not found in current path.');
+        }
+
         if ($exitCode > 0) {
-            self::checkExitCode($exitCode, $output);
+            throw new GitException(implode(PHP_EOL, $output));
         }
 
         return $output;
@@ -138,19 +143,6 @@ class Git implements VersionControlSystem
         $tags = self::execute('tag', ['--list', '--sort=taggerdate', '--merged=' . $tag, $preReleaseTagPattern]);
 
         return array_map([$this, 'getVersionFromTag'], $tags);
-    }
-
-    /**
-     * @param mixed[] $output
-     */
-    protected static function checkExitCode(int $exitCode, array $output): void
-    {
-        switch ($exitCode) {
-            case 128:
-                throw new RepositoryNotFoundException('Error: Repository not found in current path.');
-            default:
-                throw new GitException(implode(PHP_EOL, $output));
-        }
     }
 
     private function getVersionFromTag(string $tag): string

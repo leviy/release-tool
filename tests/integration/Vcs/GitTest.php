@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Leviy\ReleaseTool\Tests\Integration\Vcs;
 
 use Leviy\ReleaseTool\Vcs\Git;
-use Leviy\ReleaseTool\Vcs\RepositoryNotFoundException;
+use Leviy\ReleaseTool\Vcs\ReleaseNotFoundException;
 use PHPUnit\Framework\TestCase;
 use function exec;
 use function sleep;
@@ -53,7 +53,7 @@ class GitTest extends TestCase
 
     public function testThatAnExceptionIsThrownIfNoMatchingTagIsFound(): void
     {
-        $this->expectException(RepositoryNotFoundException::class);
+        $this->expectException(ReleaseNotFoundException::class);
 
         $git = new Git();
 
@@ -64,7 +64,7 @@ class GitTest extends TestCase
     {
         $this->createTag('foo');
 
-        $this->expectException(RepositoryNotFoundException::class);
+        $this->expectException(ReleaseNotFoundException::class);
 
         $git = new Git();
 
@@ -96,7 +96,6 @@ class GitTest extends TestCase
     {
         $git = new Git();
 
-        $this->expectException(RepositoryNotFoundException::class);
         $commits = $git->getCommitsSinceLastVersion();
 
         $this->assertCount(1, $commits);
