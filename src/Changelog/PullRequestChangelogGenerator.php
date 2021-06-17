@@ -10,6 +10,7 @@ use function array_map;
 use function array_reduce;
 use function preg_match;
 use function sprintf;
+use function strpos;
 
 final class PullRequestChangelogGenerator implements ChangelogGenerator
 {
@@ -30,8 +31,10 @@ final class PullRequestChangelogGenerator implements ChangelogGenerator
         $unreleasedCommits = $this->versionControlSystem->getCommitsSinceLastVersion(self::PULL_REQUEST_PATTERN);
         $unreleasedChanges = array_map([$this, 'createChangeFromCommit'], $unreleasedCommits);
 
+        $filteredUnreleasedChanges = $this->filterUnreleasedChanges($unreleasedChanges);
+
         $changelog = new Changelog();
-        $changelog->addUnreleasedChanges($unreleasedChanges);
+        $changelog->addUnreleasedChanges($filteredUnreleasedChanges);
 
         return $changelog;
     }
@@ -58,12 +61,32 @@ final class PullRequestChangelogGenerator implements ChangelogGenerator
                     $commits
                 );
 
-                $changelog->addVersion($version, $changes);
+                $filterUnreleasedChanges = $this->filterUnreleasedChanges($changes);
+
+                $changelog->addVersion($version, $filterUnreleasedChanges);
 
                 return $changelog;
             },
             new Changelog()
         );
+    }
+
+    /**
+     * @param mixed[] $changeLogElements
+     * @return mixed[]
+     */
+    private function filterUnreleasedChanges(array $changeLogElements): array
+    {
+        $filteredChangeLogElements = [];
+        foreach ($changeLogElements as $element) {
+            if (strpos($element, '[MERGE]') !== false) {
+                continue;
+            }
+
+            $filteredChangeLogElements[] = $element;
+        }
+
+        return $filteredChangeLogElements;
     }
 
     /**
