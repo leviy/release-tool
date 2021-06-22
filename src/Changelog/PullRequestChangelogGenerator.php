@@ -83,6 +83,10 @@ final class PullRequestChangelogGenerator implements ChangelogGenerator
                 continue;
             }
 
+            if (strpos($element, '[SKIP-LOG]') !== false) {
+                continue;
+            }
+
             $filteredChangeLogElements[] = $element;
         }
 
