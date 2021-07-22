@@ -26,6 +26,13 @@ your machine.
 ### Phar (recommended)
 The recommended method of installing this package is using a phar file. This is because installing using Composer can possibly cause dependency conflicts. You can download the most recent phar from the [Github Releases](https://github.com/leviy/release-tool/releases/latest) page.
 
+### Execute with Phar
+After downloading the `release-tool.phar` file, Put the `release-tool.phar` file in your home/bin (`~`/bin) folder. After that remove the `.phar` at the end of the file. Next you want to give the right permissions to the `release-tool`. Execute the following command in your console so that the `release-tool` has the correct permissions:
+
+```bash
+chmod 775 release-tool
+```
+
 ### Composer
 Alternatively, you can install this package using [Composer](https://getcomposer.org/):
 
