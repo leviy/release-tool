@@ -26,6 +26,9 @@ your machine.
 ### Phar (recommended)
 The recommended method of installing this package is using a phar file. This is because installing using Composer can possibly cause dependency conflicts. You can download the most recent phar from the [Github Releases](https://github.com/leviy/release-tool/releases/latest) page.
 
+## Global installation (linux)
+Move the downloaded `release-tool.phar` file into your PATH (e.g. `~/bin/release-tool`). Make sure to set the file to executable permissions (e.g. `chmod 775 release-tool`).
+
 ### Composer
 Alternatively, you can install this package using [Composer](https://getcomposer.org/):
 
