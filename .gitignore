@@ -1,5 +1,11 @@
+# Symfony
 /vendor/
-/bin/box.phar
 /build
+
+# Dependencies
+/bin/local-security-checker
+/bin/box.phar
+
+# Cache
 /.phpcs-cache
 /.phpunit.result.cache
