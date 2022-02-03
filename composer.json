@@ -4,7 +4,7 @@
     "description": "Command line tool for releasing new versions of a project",
     "license": "MIT",
     "require": {
-        "php": "^7.3",
+        "php": "^7.3||^8.0",
         "beberlei/assert": "^3.2",
         "guzzlehttp/guzzle": "^6.3",
         "padraic/phar-updater": "^1.0",
@@ -18,7 +18,7 @@
         "leviy/coding-standard": "^4.0",
         "mockery/mockery": "^1.1",
         "phpstan/phpstan": "^0.12.14",
-        "phpunit/phpunit": "^8.5",
+        "phpunit/phpunit": "^9.0",
         "symfony/process": "^5.0"
     },
     "config": {

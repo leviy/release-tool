@@ -47,5 +47,5 @@ bin/local-security-checker:
 	chmod a+x bin/local-security-checker
 
 bin/box.phar:
-	curl -LS https://github.com/humbug/box/releases/download/3.8.4/box.phar -o bin/box.phar
+	curl -LS https://github.com/humbug/box/releases/download/3.14.0/box.phar -o bin/box.phar
 	chmod a+x bin/box.phar
