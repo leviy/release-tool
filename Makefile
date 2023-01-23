@@ -37,15 +37,15 @@ coding-standards: vendor
 security-tests: vendor bin/local-security-checker
 	bin/local-security-checker
 
-security_checker_binary = local-php-security-checker_1.0.0_linux_amd64
+security_checker_binary = local-php-security-checker_2.0.6_linux_amd64
 ifeq ($(shell uname -s), Darwin)
-	security_checker_binary = local-php-security-checker_1.0.0_darwin_amd64
+	security_checker_binary = local-php-security-checker_2.0.6_darwin_amd64
 endif
 
 bin/local-security-checker:
-	curl -LS https://github.com/fabpot/local-php-security-checker/releases/download/v1.0.0/$(security_checker_binary) -o bin/local-security-checker
+	curl -LS https://github.com/fabpot/local-php-security-checker/releases/download/v2.0.6/$(security_checker_binary) -o bin/local-security-checker
 	chmod a+x bin/local-security-checker
 
 bin/box.phar:
-	curl -LS https://github.com/humbug/box/releases/download/3.14.0/box.phar -o bin/box.phar
+	curl -LS https://github.com/humbug/box/releases/download/3.16.0/box.phar -o bin/box.phar
 	chmod a+x bin/box.phar

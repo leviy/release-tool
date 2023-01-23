@@ -3,96 +3,50 @@ declare(strict_types=1);
 
 namespace Leviy\ReleaseTool\Console\Command;
 
-use Humbug\SelfUpdate\Strategy\GithubStrategy;
-use Humbug\SelfUpdate\Updater;
 use Leviy\ReleaseTool\Console\Application;
-use Leviy\ReleaseTool\Console\VersionHelper;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
+use SelfUpdate\SelfUpdateCommand as BaseSelfUpdateCommand;
+use function preg_match;
 use function sprintf;
 
-final class SelfUpdateCommand extends Command
+final class SelfUpdateCommand extends BaseSelfUpdateCommand
 {
+    private const REPOSITORY = 'leviy/release-tool';
+
+    private const NORMALIZED_VERSION_REGEX = '/^(?<major>\d{1,5}).(?<minor>\d+).(?<patch>\d+).0$/';
+
+    public function __construct()
+    {
+        parent::__construct(Application::NAME, Application::VERSION, self::REPOSITORY);
+    }
+
     /**
-     * @var Updater
+     * The method parent::getLatestReleaseFromGithub returns an array with a normalized version number.
+     * The normalized version is suffixed with an additional ".0" which doesn't really fit the commonly
+     * used "major.minor.patch" format. Here we detect whether an additional ".0" is suffixed to the
+     * version number and change it to the "major.minor.patch" format.
+     *
+     * @param array<string, string | bool> $options
+     * @return array<string, string>
      */
-    private $updater;
-
-    public function __construct(Updater $updater)
+    public function getLatestReleaseFromGithub(array $options): ?array
     {
-        parent::__construct();
+        $latestReleaseFromGithub = parent::getLatestReleaseFromGithub($options);
 
-        $strategy = new GithubStrategy();
-        $strategy->setPackageName('leviy/release-tool');
-        $strategy->setPharName('release-tool.phar');
-        $strategy->setCurrentLocalVersion(Application::VERSION);
-
-        $updater->setStrategyObject($strategy);
-
-        $this->updater = $updater;
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setName('self-update')
-            ->setDescription('Updates release-tool.phar to the latest version')
-            ->addOption(
-                'rollback',
-                'r',
-                InputOption::VALUE_NONE,
-                'Revert to an older version of the release tool'
-            )
-            ->setHelp(
-                <<<EOF
-The <info>%command.name%</info> command checks for newer versions of the release
-tool and if found, installs the latest.
-
-<info>%command.full_name%</info>
-EOF
-            );
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        if ($input->getOption('rollback')) {
-            $output->writeln('Rolling back to the previous version.');
-
-            $this->updater->rollback();
-
-            return 0;
+        if ($latestReleaseFromGithub === null) {
+            return null;
         }
 
-        if (!$this->updater->hasUpdate()) {
-            $output->writeln(
-                sprintf(
-                    '<info>You are already using version %s.</info>',
-                    VersionHelper::removeVersionPrefix(Application::VERSION)
-                )
-            );
-
-            return 0;
+        if (!preg_match(self::NORMALIZED_VERSION_REGEX, $latestReleaseFromGithub['version'], $matches)) {
+            return $latestReleaseFromGithub;
         }
 
-        $output->writeln(
-            sprintf(
-                'Updating to version <info>%s</info>.',
-                VersionHelper::removeVersionPrefix($this->updater->getNewVersion())
-            )
-        );
-        $output->writeln('Downloading...');
-
-        $this->updater->update();
-
-        $output->writeln(
-            sprintf(
-                'Use <info>release-tool self-update --rollback</info> to revert to version <comment>%s</comment>.',
-                VersionHelper::removeVersionPrefix($this->updater->getOldVersion())
-            )
+        $latestReleaseFromGithub['version'] = sprintf(
+            '%s.%s.%s',
+            $matches['major'],
+            $matches['minor'],
+            $matches['patch'],
         );
 
-        return 0;
+        return $latestReleaseFromGithub;
     }
 }

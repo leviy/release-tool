@@ -72,8 +72,8 @@ final class PullRequestChangelogGenerator implements ChangelogGenerator
     }
 
     /**
-     * @param mixed[] $changeLogElements
-     * @return mixed[]
+     * @param string[] $changeLogElements
+     * @return string[]
      */
     private function filterUnreleasedChanges(array $changeLogElements): array
     {

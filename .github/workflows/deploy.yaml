@@ -3,7 +3,7 @@ on:
   push:
   release:
     # Every published release will trigger a distribution app build which will
-    # added to the release a asset.
+    # added to the release an asset.
     types: [published]
 
 env:
@@ -18,25 +18,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup PHP with Composer v1
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.3'
-          tools: composer:v1
+          # It's important to use the lowest supported PHP version when building the release-tool.
+          # Otherwise, users can be confronted with a composer platform check error when they use
+          # a PHP version that's lower than the version used here to build the release-tool.
+          php-version: '7.4'
 
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+      - name: Composer Install
+        uses: ramsey/composer-install@v2
 
       - name: Create build
         run: make dist
+
       - uses: actions/upload-release-asset@v1
         if: github.event_name == 'release'
         env:

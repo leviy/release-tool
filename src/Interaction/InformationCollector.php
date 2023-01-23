@@ -10,5 +10,5 @@ interface InformationCollector
     /**
      * @param string[] $choices
      */
-    public function askMultipleChoice(string $question, array $choices, ?string $default = null): string;
+    public function askMultipleChoice(string $question, array $choices, ?string $default = null): ?string;
 }

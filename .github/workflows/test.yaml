@@ -5,65 +5,25 @@ env:
   COMPOSER_AUTH: ${{ secrets.COMPOSER_GITHUB_AUTH }}
 
 jobs:
-  test_php7-3:
+  test:
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [ 7.4, 8.0, 8.1 ]
+
     steps:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Setup PHP with Composer v1
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.3'
-          tools: composer:v1
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
+          php-version: ${{ matrix.php }}
 
       - name: Composer Install
-        run: composer install --no-interaction --no-progress --no-ansi
-
-      - name: Test
-        run: make static-analysis unit-tests acceptance-tests coding-standards
-
-      - name: Integration tests
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          make integration-tests
-  test_php8:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: Setup PHP with Composer v1
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.0'
-          tools: composer:v1
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: |
-          echo "::set-output name=dir::$(composer config cache-files-dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
-      - name: Composer Install
-        run: composer install --no-interaction --no-progress --no-ansi
+        uses: ramsey/composer-install@v2
 
       - name: Test
         run: make static-analysis unit-tests acceptance-tests coding-standards

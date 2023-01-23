@@ -13,24 +13,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Setup PHP with Composer v1
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          tools: composer:v1
-
-      - name: Authenticate npm
-        env:
-          COMPOSER_GITHUB_TOKEN: ${{ secrets.COMPOSER_GITHUB_TOKEN }}
-        run: |
-          npm config set "@leviy:registry" "https://npm.pkg.github.com" \
-          && npm config set "//npm.pkg.github.com/:_authToken" "$COMPOSER_GITHUB_TOKEN"
 
       - name: Composer Install
-        run: composer install --no-interaction --no-progress --no-ansi
-
-      - name: Npm Install
-        run: npm install --silent --no-fund --no-audit
+        uses: ramsey/composer-install@v2
 
       - name: Test
         run: make static-analysis unit-tests acceptance-tests
@@ -41,18 +30,10 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name: Setup PHP with Composer v1
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
-          tools: composer:v1
-
-      - name: Authenticate npm
-        env:
-          COMPOSER_GITHUB_TOKEN: ${{ secrets.COMPOSER_GITHUB_TOKEN }}
-        run: |
-          npm config set "@leviy:registry" "https://npm.pkg.github.com" \
-          && npm config set "//npm.pkg.github.com/:_authToken" "$COMPOSER_GITHUB_TOKEN"
 
       - name: Security checks
         run: make security-tests
