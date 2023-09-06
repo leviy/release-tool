@@ -32,12 +32,9 @@ jobs:
       - name: Create build
         run: make dist
 
-      - uses: actions/upload-release-asset@v1
+      - name: Upload release asset
         if: github.event_name == 'release'
+        run: gh release upload "$TAG" build/release-tool.phar
         env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-         upload_url: ${{ github.event.release.upload_url }}
-         asset_path: build/release-tool.phar
-         asset_name: release-tool.phar
-         asset_content_type: application/zip
+          TAG: ${{ github.event.release.tag_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
