@@ -24,7 +24,7 @@ use function sprintf;
 
 final class Application extends SymfonyApplication
 {
-    private const NAME = 'Leviy Release Tool';
+    public const NAME = 'Leviy Release Tool';
 
     public const VERSION = '@package_version@';
 
@@ -91,6 +91,7 @@ final class Application extends SymfonyApplication
             throw new RuntimeException('Error reading the configuration file');
         }
 
+        /** @var mixed[] $config */
         $config = Yaml::parse($yamlContents);
 
         $processor = new Processor();

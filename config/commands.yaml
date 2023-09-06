@@ -16,7 +16,5 @@ services:
 
   command.self_update:
     class: Leviy\ReleaseTool\Console\Command\SelfUpdateCommand
-    arguments:
-      - '@phar_updater'
     tags:
       - { name: console.command, command: self-update }

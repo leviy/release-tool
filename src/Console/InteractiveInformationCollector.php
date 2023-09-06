@@ -26,8 +26,11 @@ final class InteractiveInformationCollector implements InformationCollector
     /**
      * @inheritdoc
      */
-    public function askMultipleChoice(string $question, array $choices, ?string $default = null): string
+    public function askMultipleChoice(string $question, array $choices, ?string $default = null): ?string
     {
-        return $this->style->choice($question, $choices, $default);
+        /** @var ?string $choice */
+        $choice = $this->style->choice($question, $choices, $default);
+
+        return $choice;
     }
 }

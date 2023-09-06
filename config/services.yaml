@@ -31,10 +31,3 @@ services:
     class: Leviy\ReleaseTool\Changelog\Formatter\Filter\GitHubPullRequestUrlFilter
     arguments:
       - '%github.owner%/%github.repo%'
-
-  phar_updater:
-    class: Humbug\SelfUpdate\Updater
-    arguments:
-      - null
-      - false
-      - github
