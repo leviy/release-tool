@@ -24,7 +24,7 @@ jobs:
           # It's important to use the lowest supported PHP version when building the release-tool.
           # Otherwise, users can be confronted with a composer platform check error when they use
           # a PHP version that's lower than the version used here to build the release-tool.
-          php-version: '7.4'
+          php-version: '8.3'
 
       - name: Composer Install
         uses: ramsey/composer-install@v2
