@@ -4,7 +4,7 @@
     "description": "Command line tool for releasing new versions of a project",
     "license": "MIT",
     "require": {
-        "php": "^7.4 || ^8.0, <8.2",
+        "php": "^8.3",
         "beberlei/assert": "^3.2",
         "consolidation/self-update": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
